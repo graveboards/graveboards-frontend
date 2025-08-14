@@ -19,10 +19,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${nunito.className} antialiased`}
+      <body className={`bg-white text-black dark:bg-black dark:text-white ${nunito.className} antialiased`}
       >
-        {children}
+      {/*<SidebarProvider>*/}
+      <div className="flex">
+          {/*<Sidebar/>*/}
+          <div className="flex-1">
+              {/*<Topbar/>*/}
+              <div className="px-5 pb-5">
+                  {children}
+              </div>
+          </div>
+      </div>
+      {/*</SidebarProvider>*/}
       </body>
     </html>
   );
