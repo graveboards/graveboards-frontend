@@ -9,6 +9,7 @@ import {GoX} from "react-icons/go";
 import Link from "next/link";
 import {MdChecklist, MdHome, MdList, MdLogin, MdSearch} from "react-icons/md";
 import {usePathname} from "next/navigation";
+import Logo from "@/components/ui/Logo";
 
 const Sidebar: FC = () => {
     const {open, toggleOpen} = useSidebar();
@@ -23,7 +24,8 @@ const Sidebar: FC = () => {
                 { "-translate-x-full": !open }
             )}>
             <SidebarHeader>
-                <div className="text-2xl self-center">
+                <div className="text-2xl flex gap-2 items-center">
+                    <Logo size={24} className="dark:text-tertiary-10 text-tertiary-900"/>
                     Graveboards
                 </div>
                 <Button
@@ -56,8 +58,8 @@ const Sidebar: FC = () => {
                         Discover
                     </SidebarSectionLabel>
                     <SidebarSectionContent>
-                        <SidebarButton asChild isActive={isActive("/home")}>
-                            <Link href="/home">
+                        <SidebarButton asChild isActive={isActive("/")}>
+                            <Link href="/">
                                 <MdHome/>
                                 Home
                             </Link>
