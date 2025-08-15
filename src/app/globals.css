@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+@theme {
+    /* ----- animations ----- */
+    --animate-wiggle: wiggle 1s ease-in-out infinite;
+
+    /* ----- colors ----- */
+    /* request */
+    --color-request-accepted: #A347EB;
+    --color-request-rejected: #E82025;
+    --color-request-pending: #777777;
+
+    /* beatmapset */
+    --color-beatmapset-verified: #E82025;
+    --color-beatmapset-unverified: #FFDAD6;
+
+    /* primary scale */
+    --color-primary-10: #FFFBFF;
+    --color-primary-20: #FFF8F7;
+    --color-primary-50: #FFEDEA;
+    --color-primary-100: #FFDAD6;
+    --color-primary-200: #FFB4AB;
+    --color-primary-300: #FF897E;
+    --color-primary-400: #FF544B;
+    --color-primary-500: #E82025;
+    --color-primary-600: #C00013;
+    --color-primary-650: #A90010;
+    --color-primary-700: #93000C;
+    --color-primary-750: #7D0009;
+    --color-primary-800: #690006;
+    --color-primary-850: #540004;
+    --color-primary-900: #410002;
+    --color-primary-950: #2D0001;
+
+    /* tertiary scale */
+    --color-tertiary-10: #FCFCFC;
+    --color-tertiary-20: #F9F9F9;
+    --color-tertiary-50: #F1F1F1;
+    --color-tertiary-100: #E2E2E2;
+    --color-tertiary-200: #C6C6C6;
+    --color-tertiary-300: #ABABAB;
+    --color-tertiary-400: #919191;
+    --color-tertiary-500: #777777;
+    --color-tertiary-600: #5E5E5E;
+    --color-tertiary-650: #525252;
+    --color-tertiary-700: #474747;
+    --color-tertiary-750: #3B3B3B;
+    --color-tertiary-800: #303030;
+    --color-tertiary-850: #262626;
+    --color-tertiary-900: #1B1B1B;
+    --color-tertiary-950: #111111;
+
+    /* stars (use like text-stars-4\\.2) */
+    --color-stars-0: #AAAAAA;
+    --color-stars-100: #4290FB;
+    --color-stars-125: #4FC0FF;
+    --color-stars-200: #4FFFD5;
+    --color-stars-250: #7CFF4F;
+    --color-stars-330: #F6F05C;
+    --color-stars-420: #FF8068;
+    --color-stars-490: #FF4E6F;
+    --color-stars-580: #C645B8;
+    --color-stars-670: #6563DE;
+    --color-stars-770: #18158E;
+    --color-stars-900: #000000;
+}
+
+/* Define your keyframes in plain CSS */
+@keyframes wiggle {
+    0%, 50% {
+        transform: rotate(0deg)
+    }
+    10% {
+        transform: rotate(3deg)
+    }
+    20% {
+        transform: rotate(-3deg)
+    }
+    30% {
+        transform: rotate(3deg)
+    }
+    40% {
+        transform: rotate(-3deg)
+    }
 }
