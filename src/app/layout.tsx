@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import type {Metadata} from "next";
+import {Nunito} from "next/font/google";
 import "./globals.css";
+import {SidebarProvider} from "@/providers/SidebarProvider";
+import Sidebar from "@/components/layout/Sidebar";
 
 const nunito = Nunito({
   variable: "--font-geist-sans",
@@ -21,9 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`bg-white text-black dark:bg-black dark:text-white ${nunito.className} antialiased`}
       >
-      {/*<SidebarProvider>*/}
+      <SidebarProvider>
       <div className="flex">
-          {/*<Sidebar/>*/}
+          <Sidebar/>
           <div className="flex-1">
               {/*<Topbar/>*/}
               <div className="px-5 pb-5">
@@ -31,7 +33,7 @@ export default function RootLayout({
               </div>
           </div>
       </div>
-      {/*</SidebarProvider>*/}
+      </SidebarProvider>
       </body>
     </html>
   );
