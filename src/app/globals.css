@@ -1,108 +1,41 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-    --background: #ffffff;
-    --foreground: #171717;
+.single-thumb .range-slider__thumb[data-lower] {
+    width: 0;
+    height: 0;
 }
 
-@theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
+.range-slider .range-slider__range {
+    background: theme('colors.primary.500');
+    border-radius: 0.5rem;
+}
+
+.range-slider .range-slider__thumb {
+    background: theme('colors.primary.500');
+    border-radius: 50%;
+    width: 1rem;
+    height: 1rem;
+}
+
+.range-slider {
+    background-color: theme('colors.tertiary.300');
+    border-radius: 0.5rem;
+    height: 0.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
+    .range-slider {
+        background-color: theme('colors.tertiary.700');
     }
 }
 
-body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+.star-rating {
+    background: rgb(170,170,170);
+    background: -moz-linear-gradient(90deg, rgba(170,170,170,1) 0%, rgba(170,170,170,1) 1%, rgba(66,144,251,1) 1%, rgba(79,192,255,1) 12.5%, rgba(79,255,213,1) 20%, rgba(124,255,79,1) 25%, rgba(246,240,92,1) 33%, rgba(255,128,104,1) 42%, rgba(255,78,111,1) 49%, rgba(198,69,184,1) 58%, rgba(101,99,222,1) 67%, rgba(24,21,142,1) 77%, rgba(0,0,0,1) 90%);
+    background: -webkit-linear-gradient(90deg, rgba(170,170,170,1) 0%, rgba(170,170,170,1) 1%, rgba(66,144,251,1) 1%, rgba(79,192,255,1) 12.5%, rgba(79,255,213,1) 20%, rgba(124,255,79,1) 25%, rgba(246,240,92,1) 33%, rgba(255,128,104,1) 42%, rgba(255,78,111,1) 49%, rgba(198,69,184,1) 58%, rgba(101,99,222,1) 67%, rgba(24,21,142,1) 77%, rgba(0,0,0,1) 90%);
+    background: linear-gradient(90deg, rgba(170,170,170,1) 0%, rgba(170,170,170,1) 1%, rgba(66,144,251,1) 1%, rgba(79,192,255,1) 12.5%, rgba(79,255,213,1) 20%, rgba(124,255,79,1) 25%, rgba(246,240,92,1) 33%, rgba(255,128,104,1) 42%, rgba(255,78,111,1) 49%, rgba(198,69,184,1) 58%, rgba(101,99,222,1) 67%, rgba(24,21,142,1) 77%, rgba(0,0,0,1) 90%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#aaaaaa",endColorstr="#000000",GradientType=1);
 }
 
-@theme {
-    /* ----- animations ----- */
-    --animate-wiggle: wiggle 1s ease-in-out infinite;
-
-    /* ----- colors ----- */
-    /* request */
-    --color-request-accepted: #A347EB;
-    --color-request-rejected: #E82025;
-    --color-request-pending: #777777;
-
-    /* beatmapset */
-    --color-beatmapset-verified: #E82025;
-    --color-beatmapset-unverified: #FFDAD6;
-
-    /* primary scale */
-    --color-primary-10: #FFFBFF;
-    --color-primary-20: #FFF8F7;
-    --color-primary-50: #FFEDEA;
-    --color-primary-100: #FFDAD6;
-    --color-primary-200: #FFB4AB;
-    --color-primary-300: #FF897E;
-    --color-primary-400: #FF544B;
-    --color-primary-500: #E82025;
-    --color-primary-600: #C00013;
-    --color-primary-650: #A90010;
-    --color-primary-700: #93000C;
-    --color-primary-750: #7D0009;
-    --color-primary-800: #690006;
-    --color-primary-850: #540004;
-    --color-primary-900: #410002;
-    --color-primary-950: #2D0001;
-
-    /* tertiary scale */
-    --color-tertiary-10: #FCFCFC;
-    --color-tertiary-20: #F9F9F9;
-    --color-tertiary-50: #F1F1F1;
-    --color-tertiary-100: #E2E2E2;
-    --color-tertiary-200: #C6C6C6;
-    --color-tertiary-300: #ABABAB;
-    --color-tertiary-400: #919191;
-    --color-tertiary-500: #777777;
-    --color-tertiary-600: #5E5E5E;
-    --color-tertiary-650: #525252;
-    --color-tertiary-700: #474747;
-    --color-tertiary-750: #3B3B3B;
-    --color-tertiary-800: #303030;
-    --color-tertiary-850: #262626;
-    --color-tertiary-900: #1B1B1B;
-    --color-tertiary-950: #111111;
-
-    /* stars (use like text-stars-4\\.2) */
-    --color-stars-0: #AAAAAA;
-    --color-stars-100: #4290FB;
-    --color-stars-125: #4FC0FF;
-    --color-stars-200: #4FFFD5;
-    --color-stars-250: #7CFF4F;
-    --color-stars-330: #F6F05C;
-    --color-stars-420: #FF8068;
-    --color-stars-490: #FF4E6F;
-    --color-stars-580: #C645B8;
-    --color-stars-670: #6563DE;
-    --color-stars-770: #18158E;
-    --color-stars-900: #000000;
-}
-
-/* Define your keyframes in plain CSS */
-@keyframes wiggle {
-    0%, 50% {
-        transform: rotate(0deg)
-    }
-    10% {
-        transform: rotate(3deg)
-    }
-    20% {
-        transform: rotate(-3deg)
-    }
-    30% {
-        transform: rotate(3deg)
-    }
-    40% {
-        transform: rotate(-3deg)
-    }
-}
