@@ -35,7 +35,9 @@ export const DefaultBeatmapListingsInclude = {
     beatmapset_snapshots: {
         artist: true,
         title: true,
+        user_profile: true,
     },
+    owner_profiles: true,
 } satisfies BeatmapSnapshotInclude;
 
 export const DefaultQueueInclude = {

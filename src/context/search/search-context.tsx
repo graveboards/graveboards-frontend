@@ -1,30 +1,28 @@
-'use client'
+'use client';
 
-import {createContext, FC, ReactNode, useContext, useState} from 'react';
+import React, {createContext, FC, useContext, useState} from "react";
 
 interface SearchContextType {
-    search: string,
-    setSearch: (search: string) => void,
+    search: string;
+    setSearch: (src: string) => void;
 }
 
 export const SearchContext = createContext<SearchContextType>({
     search: "",
-    setSearch: ()=>{},
-})
+    setSearch: () => {},
+});
 
-export const SearchProvider: FC<{
-    children: ReactNode,
-}> = ({children}) => {
+export const SearchProvider: FC<{ children: React.ReactNode }> = ({children}) => {
     const [search, setSearch] = useState<string>("");
 
     return (
         <SearchContext.Provider value={{
-            search: search,
-            setSearch: setSearch,
+            search,
+            setSearch,
         }}>
             {children}
         </SearchContext.Provider>
-    )
-}
+    );
+};
 
 export const useSearch = () => useContext(SearchContext);

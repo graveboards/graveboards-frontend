@@ -9,13 +9,9 @@ interface PageProps {
 const Page = async ({searchParams}: PageProps) => {
     const sp = await searchParams;
 
-    const scope = sp.scope;
+    const scope = sp.scope ?? "beatmapsets";
 
-    if (scope) {
-        return <SearchContent scope={scope as SearchQueryScope}/>;
-    }
-
-    return <SearchContent scope={'all' as SearchQueryScope}/>;
+    return <SearchContent scope={scope as SearchQueryScope}/>;
 };
 
 export default Page;

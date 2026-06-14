@@ -13,7 +13,7 @@ export type SearchResource = {
     q: string;
 }
 
-export type SearchQueryScope = "beatmaps" | "beatmapsets" | "queues" | "requests" | "all";
+export type SearchQueryScope = "beatmaps" | "beatmapsets" | "queues" | "requests";
 
 export type SearchQueryTerm = {
     terms?: string | string[];

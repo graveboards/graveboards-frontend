@@ -2,18 +2,19 @@
 
 import React, {FC} from "react";
 
-import BeatmapsetCard from "@/components/new/beatmapsets/cards/beatmapset-card";
-import BeatmapsetCardSkeleton from "@/components/new/beatmapsets/cards/beatmapset-card-skeleton";
+import {InfiniteResourceList, Layout} from "@/components/new/infinite-resource-list";
+import {EndpointSpecification, QueuesEndpoint} from "@/types/endpoints";
+import QueueCard from "@/components/new/queues/panels/queue-card";
+import QueueCardSkeleton from "@/components/new/queues/panels/queue-card-skeleton";
 
-import {InfiniteResourceList} from "@/components/new/infinite-resource-list";
-import {BeatmapsetsEndpoint, EndpointSpecification} from "@/types/endpoints";
-
-interface BeatmapsetsProps {
+interface RequestsProps {
     title: string;
-    filters?: EndpointSpecification["Beatmapsets"]["filters"];
-    defaultFilters?: EndpointSpecification["Beatmapsets"]["filters"];
-    sorting?: EndpointSpecification["Beatmapsets"]["sorting"];
-    defaultSorting?: EndpointSpecification["Beatmapsets"]["sorting"];
+    filters?: EndpointSpecification["Queues"]["filters"];
+    defaultFilters?: EndpointSpecification["Queues"]["filters"];
+    sorting?: EndpointSpecification["Queues"]["sorting"];
+    defaultSorting?: EndpointSpecification["Queues"]["sorting"];
+    search?: string;
+    defaultSearch?: string;
     showControls?: boolean;
     showLayoutSwitch?: boolean;
     showSorting?: boolean;
@@ -22,12 +23,14 @@ interface BeatmapsetsProps {
     editMode?: boolean;
 }
 
-const Beatmapsets: FC<BeatmapsetsProps> = ({
+const Queues: FC<RequestsProps> = ({
                                          title,
                                          filters,
                                          defaultFilters,
                                          sorting,
                                          defaultSorting,
+                                         search,
+                                         defaultSearch,
                                          showControls = true,
                                          showLayoutSwitch = true,
                                          showSorting = true,
@@ -41,17 +44,13 @@ const Beatmapsets: FC<BeatmapsetsProps> = ({
         <InfiniteResourceList
             title={title}
             id={id}
-            endpoint={BeatmapsetsEndpoint}
-            params={{filters, sorting}}
-            defaults={{filters: defaultFilters, sorting: defaultSorting}}
-            loader={(view) => <BeatmapsetCardSkeleton view={view}/>}
-            itemKey={(beatmapset) => beatmapset.id}
-            renderItem={(beatmapset, view, editMode) => (
-                <BeatmapsetCard
-                    beatmapset={beatmapset.snapshots[0]}
-                    view={view}
-                    editMode={editMode}
-                />
+            endpoint={QueuesEndpoint}
+            params={{filters, sorting, search}}
+            defaults={{filters: defaultFilters, sorting: defaultSorting, search: defaultSearch}}
+            loader={() => <QueueCardSkeleton />}
+            itemKey={(queue) => queue.id}
+            renderItem={(queue) => (
+                <QueueCard queue={queue}/>
             )}
             showControls={showControls}
             showLayoutSwitch={showLayoutSwitch}
@@ -59,8 +58,9 @@ const Beatmapsets: FC<BeatmapsetsProps> = ({
             showFilters={showFilters}
             showSearch={showSearch}
             editMode={editMode}
+            defaultLayout={Layout.List}
         />
     );
 };
 
-export default Beatmapsets;
+export default Queues;

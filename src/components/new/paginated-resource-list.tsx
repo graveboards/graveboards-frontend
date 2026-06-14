@@ -57,8 +57,7 @@ export function PaginatedResourceList<K extends EndpointKey>({
 
     const [layout, setLayout] = React.useState<Layout>(editMode ? Layout.List : Layout.Grid);
     const [search, setSearch] = React.useState('');
-    const [filters, setFilters] = React.useState(params.filters);
-    const [page, setPage] = React.useState(1);
+    const [filters] = React.useState(params.filters);
 
     const {items, error, isEmpty, size, setSize, isLoading} = useAPIInfinite(
         endpoint,
@@ -103,7 +102,7 @@ export function PaginatedResourceList<K extends EndpointKey>({
 
             <div id="scrollable-div">
                 <div
-                    className={cn("gap-4 overflow-visible", layout === Layout.Grid ? "grid grid-cols-[repeat(auto-fill,_minmax(18rem,_1fr))]" : "flex flex-col", classNames?.list)}
+                    className={cn("gap-4 overflow-visible", layout === Layout.Grid ? "grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]" : "flex flex-col", classNames?.list)}
                 >
                     {isLoading ? (
                         loader(layout)

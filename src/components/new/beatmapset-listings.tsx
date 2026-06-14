@@ -2,8 +2,8 @@
 
 import React, {FC} from "react";
 
-import BeatmapsetCard from "@/components/beatmapsets/cards/beatmapset-card";
-import BeatmapsetCardSkeleton from "@/components/beatmapsets/cards/beatmapset-card-skeleton";
+import BeatmapsetCard from "@/components/new/beatmapsets/cards/beatmapset-card";
+import BeatmapsetCardSkeleton from "@/components/new/beatmapsets/cards/beatmapset-card-skeleton";
 import {InfiniteResourceList} from "@/components/new/infinite-resource-list";
 import {BeatmapsetListingsEndpoint, EndpointSpecification} from "@/types/endpoints";
 
@@ -13,6 +13,8 @@ interface BeatmapsetListingsProps {
     defaultFilters?: EndpointSpecification["BeatmapsetListings"]["filters"];
     sorting?: EndpointSpecification["BeatmapsetListings"]["sorting"];
     defaultSorting?: EndpointSpecification["BeatmapsetListings"]["sorting"];
+    search?: string;
+    defaultSearch?: string;
     showControls?: boolean;
     showLayoutSwitch?: boolean;
     showSorting?: boolean;
@@ -27,6 +29,8 @@ const BeatmapsetListings: FC<BeatmapsetListingsProps> = ({
                                                              defaultFilters,
                                                              sorting,
                                                              defaultSorting,
+                                                             search,
+                                                             defaultSearch,
                                                              showControls = true,
                                                              showLayoutSwitch = true,
                                                              showSorting = true,
@@ -41,8 +45,8 @@ const BeatmapsetListings: FC<BeatmapsetListingsProps> = ({
             title={title}
             id={id}
             endpoint={BeatmapsetListingsEndpoint}
-            params={{filters, sorting}}
-            defaults={{filters: defaultFilters, sorting: defaultSorting}}
+            params={{filters, sorting, search}}
+            defaults={{filters: defaultFilters, sorting: defaultSorting, search: defaultSearch}}
             loader={(view) => <BeatmapsetCardSkeleton view={view}/>}
             itemKey={(beatmapset) => beatmapset.beatmapset_id}
             renderItem={(beatmapset, view, editMode) => (

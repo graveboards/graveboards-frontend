@@ -13,6 +13,8 @@ interface RequestsProps {
     defaultFilters?: EndpointSpecification["Requests"]["filters"];
     sorting?: EndpointSpecification["Requests"]["sorting"];
     defaultSorting?: EndpointSpecification["Requests"]["sorting"];
+    search?: string;
+    defaultSearch?: string;
     showControls?: boolean;
     showLayoutSwitch?: boolean;
     showSorting?: boolean;
@@ -27,6 +29,8 @@ const Requests: FC<RequestsProps> = ({
                                          defaultFilters,
                                          sorting,
                                          defaultSorting,
+                                         search,
+                                         defaultSearch,
                                          showControls = true,
                                          showLayoutSwitch = true,
                                          showSorting = true,
@@ -41,8 +45,8 @@ const Requests: FC<RequestsProps> = ({
             title={title}
             id={id}
             endpoint={RequestsEndpoint}
-            params={{filters, sorting}}
-            defaults={{filters: defaultFilters, sorting: defaultSorting}}
+            params={{filters, sorting, search}}
+            defaults={{filters: defaultFilters, sorting: defaultSorting, search: defaultSearch}}
             loader={(view) => <RequestCardSkeleton view={view}/>}
             itemKey={(request) => request.id}
             renderItem={(request, view, editMode) => (
