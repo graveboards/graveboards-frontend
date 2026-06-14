@@ -7,28 +7,30 @@ import useSWRInfinite, {
 import qs from "qs";
 import {fetcher} from "@/utils/fetcher";
 import {EndpointDefinition, EndpointKey, EndpointSpecification} from "@/types/endpoints";
+import {API_URL} from "@/lib/constants";
+
+type PlainObject = Record<string, unknown>;
+
+const isPlainObject = (value: unknown): value is PlainObject => (
+    typeof value === "object" && value !== null && !Array.isArray(value)
+);
 
 function deepMerge<T>(base?: T, override?: T): T | undefined {
     if (base == null) return override;
     if (override == null) return base;
-    if (typeof base !== "object" || typeof override !== "object") return override;
 
-    if (Array.isArray(base) || Array.isArray(override)) return override;
+    if (!isPlainObject(base) || !isPlainObject(override)) return override;
 
-    const out: any = {...(base as any)};
-    for (const [k, v] of Object.entries(override as any)) {
-        const bv = (base as any)[k];
-        out[k] =
-            v &&
-            bv &&
-            typeof v === "object" &&
-            typeof bv === "object" &&
-            !Array.isArray(v) &&
-            !Array.isArray(bv)
-                ? deepMerge(bv, v)
-                : v;
+    const baseObject = base as PlainObject;
+    const out: PlainObject = {...baseObject};
+    for (const [key, value] of Object.entries(override)) {
+        const baseValue = baseObject[key];
+        out[key] = isPlainObject(value) && isPlainObject(baseValue)
+            ? deepMerge(baseValue, value)
+            : value;
     }
-    return out;
+
+    return out as T;
 }
 
 export type InfiniteParams<K extends EndpointKey> = {
@@ -98,4 +100,4 @@ export function makeSWRInfiniteWrapper(apiUrl: string, fetcher: <T>(url: string)
     }
 }
 
-export const useAPIInfinite = makeSWRInfiniteWrapper(process.env.NEXT_PUBLIC_API_URL!, fetcher);
+export const useAPIInfinite = makeSWRInfiniteWrapper(API_URL, fetcher);

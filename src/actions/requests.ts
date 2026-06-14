@@ -2,12 +2,9 @@
 
 import {verifySession} from "@/actions/session";
 import {Request} from "@/types/request";
+import {SERVER_API_URL} from "@/lib/server-api-url";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-  throw new Error("Please define NEXT_PUBLIC_API_URL in .env.local");
-}
+const API_URL = SERVER_API_URL;
 
 interface PostRequest {
     beatmapset_id: number;

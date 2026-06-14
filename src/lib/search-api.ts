@@ -1,10 +1,5 @@
 import {SearchQuery, SearchResource} from "@/types/search";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-    throw new Error("Please define NEXT_PUBLIC_API_URL in .env.local");
-}
+import {API_URL} from "@/lib/constants";
 
 // TODO: Add a cancellation token to the fetch request
 export const getSearchResource = async (query: SearchQuery) => {

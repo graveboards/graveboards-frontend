@@ -4,12 +4,9 @@ import { Queue } from "@/types/queue";
 import { cache } from "react";
 import { verifySession } from "@/actions/session";
 import { revalidatePath } from "next/cache";
+import {SERVER_API_URL} from "@/lib/server-api-url";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-    throw new Error("Please define NEXT_PUBLIC_API_URL in .env.local");
-}
+const API_URL = SERVER_API_URL;
 
 export const getQueues = cache(async (params?: URLSearchParams) => {
     const session = await verifySession();

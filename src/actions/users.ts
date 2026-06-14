@@ -3,8 +3,9 @@
 import { User } from "@/types/user";
 import { verifySession } from "@/actions/session";
 import { cache } from "react";
+import {SERVER_API_URL} from "@/lib/server-api-url";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
+const API_URL = SERVER_API_URL;
 
 export const getUserById = cache(async (userId: string) => {
     const session = await verifySession();
