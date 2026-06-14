@@ -11,7 +11,8 @@ interface Session extends JWTPayload {
     iss?: string;
 }
 
-const key = new TextEncoder().encode(process.env.JWT_SECRET);
+const sessionSecret = process.env.SESSION_SECRET || process.env.JWT_SECRET || "development-session-secret";
+const key = new TextEncoder().encode(sessionSecret);
 
 export const decrypt = async (session?: string) => {
     try {
@@ -22,17 +23,7 @@ export const decrypt = async (session?: string) => {
         const {payload} = await jwtVerify(session, key, {algorithms: ["HS256"]});
 
         return payload;
-    } catch (error) {
-        if (
-            typeof error === "object" &&
-            error !== null &&
-            "code" in error &&
-            error.code === "ERR_JWT_EXPIRED"
-        ) {
-            return null;
-        }
-
-        console.error(error);
+    } catch {
         return null;
     }
 }

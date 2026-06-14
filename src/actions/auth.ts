@@ -5,8 +5,9 @@ import {cache} from "react";
 import {User} from "@/types/user";
 import {redirect} from "next/navigation";
 import {JWTPayload} from "jose";
+import {SERVER_API_URL} from "@/lib/server-api-url";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = SERVER_API_URL;
 
 export interface LoginResponse {
     authorization_url: string;
@@ -49,9 +50,8 @@ export const loginUser = async (code: string, state: string) => {
         const payload = await verifyToken(token);
 
         await createSession(token, payload);
-    } catch (error) {
-        console.error("Token verification failed:", error);
-        throw new Error("Token verification failed");
+    } catch {
+        throw new Error("Authentication failed");
     }
 
 };
@@ -92,9 +92,6 @@ export const fetchUser = cache(async () => {
     });
 
     if (!response.ok) {
-        console.log("Response not ok:")
-        console.log("Status:", response.status)
-        console.log("Status Text:", response.statusText)
         return;
     }
 

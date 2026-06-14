@@ -1,6 +1,13 @@
 import {NextRequest, NextResponse} from "next/server";
 import {loginUser} from "@/actions/auth";
 
+const redirectWithAuthError = (request: NextRequest, reason: string) => {
+    const url = new URL("/home", request.url);
+    url.searchParams.set("auth_error", reason);
+
+    return NextResponse.redirect(url);
+};
+
 export async function GET(request: NextRequest) {
     const params = request.nextUrl.searchParams;
 
@@ -9,14 +16,13 @@ export async function GET(request: NextRequest) {
     const error = params.get("error");
 
     if (error || !code || !state) {
-        return NextResponse.redirect(new URL("/", request.url));
+        return redirectWithAuthError(request, "cancelled");
     }
 
     try {
         await loginUser(code, state);
-        return NextResponse.redirect(new URL("/", request.url));
-    } catch (e) {
-        console.error("Error during login:", e);
-        return NextResponse.redirect(new URL("/", request.url));
+        return NextResponse.redirect(new URL("/home", request.url));
+    } catch {
+        return redirectWithAuthError(request, "failed");
     }
 }

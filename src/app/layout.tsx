@@ -1,13 +1,14 @@
 import type {Metadata} from "next";
 import "@/app/globals.css";
-import React from "react";
+import React, {Suspense} from "react";
 import Sidebar from "@/components/new/layout/sidebar/sidebar";
 import {AuthProvider} from "@/context/auth-context";
 import {PreviewProvider} from "@/context/preview-context";
-import PreviewPlayer from "@/components/preview/preview-player";
+import PreviewPlayer from "@/components/new/preview/preview-player";
 import {Toaster} from "react-hot-toast";
 import {SidebarProvider} from "@/context/layout/sidebar-context";
 import {Nunito} from "next/font/google";
+import AuthToast from "@/components/new/layout/auth-toast";
 
 export const metadata: Metadata = {
     title: "Graveboards",
@@ -24,6 +25,9 @@ const RootLayout = ({
     <html lang="en">
     <body className={`bg-white dark:bg-black text-black dark:text-white antialiased ${nunito.className}`}>
     <Toaster position="bottom-center"/>
+    <Suspense fallback={null}>
+        <AuthToast/>
+    </Suspense>
     <AuthProvider>
         <PreviewProvider>
             <SidebarProvider>

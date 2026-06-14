@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { fetchUser, logoutUser as logoutUser } from "@/actions/auth";
+import toast from "react-hot-toast";
 
 interface AuthContextType {
     user: User | null;
@@ -27,15 +28,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const isAuthenticated = !!user;
 
-    const isAdmin = !!user?.roles?.some((role: { id: number, name: string }) => role.id === 1 && role.name === "admin");
+    const isAdmin = false // !!user?.roles?.some((role: { id: number, name: string }) => role.id === 1 && role.name === "admin");
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const userData = await fetchUser();
                 setUser(userData || null);
-            } catch (error) {
-                console.error("Failed to fetch user data:", error);
+            } catch {
+                toast.error("We couldn't load your session. Please sign in again.");
                 setUser(null);
             } finally {
                 setIsLoading(false);
@@ -48,8 +49,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = async () => {
         try {
             await logoutUser();
-        } catch (error) {
-            console.error(error);
+        } catch {
+            toast.error("We couldn't sign you out. Please try again.");
         }
 
         setUser(null);
