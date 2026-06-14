@@ -11,7 +11,7 @@ interface ManageQueueButtonProps {
 
 const ManageQueueButton: FC<ManageQueueButtonProps> = ({ queue }) => {
     const { user, isAdmin } = useAuth();
-    const isManager = user && queue.manager_profiles.some(manager => manager.id === user.id);
+    const isManager = user && (queue.manager_profiles.some(manager => manager.id === user.id) || user?.id === queue.user_id);
 
     return (isManager || isAdmin) && (
         <Link

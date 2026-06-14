@@ -1,5 +1,5 @@
 import React, {FC, useEffect, useState} from "react";
-import QueueChip from "@/components/queues/queue-chip";
+import QueueChip from "@/components/new/queues/queue-chip";
 import {Queue} from "@/types/queue";
 import {useParams} from "next/navigation";
 import useSWR from "swr";
@@ -7,12 +7,7 @@ import {fetcher} from "@/utils/fetcher";
 import Select from "@/components/ui/select";
 import {useAPIInfinite} from "@/hooks/use-swr-infinite-wrapper";
 import {QueuesEndpoint} from "@/types/endpoints";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-    throw new Error("Please define NEXT_PUBLIC_API_URL in .env.local");
-}
+import {API_URL} from "@/lib/constants";
 
 interface SelectQueuesProps {
     onSelect: (queues: number[]) => void;
@@ -77,7 +72,7 @@ const QueuesSelect: FC<SelectQueuesProps> = ({onSelect}) => {
                 <button
                     type="button"
                     onClick={() => setSize(size + 1)}
-                    className="p-2 text-tertiary-500 dark:text-tertiary-400 hover:bg-tertiary-200 active:bg-tertiary-300 dark:hover:bg-tertiary-800 active:dark:bg-tertiary-700 transition-colors duration-300 ease-in-out">
+                    className="p-2 text-tertiary-500 dark:text-tertiary-400 hover:bg-tertiary-200 active:bg-tertiary-300 dark:hover:bg-tertiary-800 dark:active:bg-tertiary-700 transition-colors duration-300 ease-in-out">
                     Load More
                 </button>
             }

@@ -5,12 +5,7 @@ import {fetcher} from "@/utils/fetcher";
 import {Queue} from "@/types/queue";
 import {SidebarSection, SidebarSectionContent, SidebarSectionLabel} from "@/components/new/layout/sidebar/sidebar";
 import SidebarManageQueueButton from "@/components/new/layout/sidebar/sidebar-manage-queue-button";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-    throw new Error("Please define NEXT_PUBLIC_API_URL in .env.local");
-}
+import {API_URL} from "@/lib/constants";
 
 const SidebarManage = () => {
     const {isAuthenticated, user} = useAuth();

@@ -5,7 +5,7 @@ import {useAuth} from "@/context/auth-context";
 import {MdAdd} from "react-icons/md";
 import {useDialog} from "@/hooks/use-dialog";
 import {Button} from "@/components/ui/button";
-import CreateQueueDialog from "@/components/queues/create-queue-dialog";
+import CreateQueueDialog from "@/components/new/queues/create-queue-dialog";
 
 const CreateQueueButton = () => {
     const {isAdmin} = useAuth();

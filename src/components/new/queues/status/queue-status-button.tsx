@@ -40,7 +40,7 @@ const QueueStatusButton: FC<QueueStatusButtonProps> = ({
     }, { is_open: queue.is_open });
 
     const { user, isAdmin } = useAuth();
-    const isManager = user && queue.manager_profiles.some(manager => manager.id === user.id);
+    const isManager = user && (queue.manager_profiles.some(manager => manager.id === user.id) || user?.id === queue.user_id);
 
 
     return (isManager || isAdmin) && (

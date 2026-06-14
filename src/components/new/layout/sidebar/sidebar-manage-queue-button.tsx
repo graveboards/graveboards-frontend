@@ -16,7 +16,7 @@ const SidebarManageQueueButton: FC<SidebarManageQueueButtonProps> = ({queue}) =>
     return (
         <SidebarButton asChild isActive={pathname ===`/queues/${queue.id}/manage`} key={queue.id}>
             <Link href={`/queues/${queue.id}/manage`}>
-                <div className="size-6 bg-tertiary-500 rounded bg-cover"
+                <div className="size-6 bg-tertiary-500 rounded-sm bg-cover"
                      style={{backgroundImage: `url(${queue.user_profile?.avatar_url})`}}/>
                 {queue.name}
             </Link>

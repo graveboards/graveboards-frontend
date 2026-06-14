@@ -6,7 +6,7 @@ import { MdChevronRight, MdEdit } from "react-icons/md";
 import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
-import QueueStatus from "@/components/queues/status/queue-status";
+import QueueStatus from "@/components/new/queues/status/queue-status";
 
 interface QueuePanelProps {
     queue: Queue;
@@ -14,7 +14,7 @@ interface QueuePanelProps {
 
 const QueueCard: FC<QueuePanelProps> = ({ queue }) => {
     const { user, isAdmin } = useAuth();
-    const isManager = user && queue.manager_profiles?.some(manager => manager.id === user.id);
+    const isManager = user && (queue.manager_profiles?.some(manager => manager.id === user.id) || user?.id === queue.user_id);
 
     return (
         <div className="flex rounded-xl overflow-hidden">
@@ -66,7 +66,7 @@ const QueueCard: FC<QueuePanelProps> = ({ queue }) => {
                 </div>
             </div>
             <Link href={`/queues/${queue.id}`}
-                  className={`flex items-center justify-center bg-tertiary-100 hover:bg-tertiary-200 active:bg-tertiary-300 dark:bg-tertiary-800 hover:dark:bg-tertiary-700 active:dark:bg-tertiary-600 pl-8 -ml-8 hover:w-20 w-14 transition-all duration-150 ease-in-out`}>
+                  className={`flex items-center justify-center bg-tertiary-100 hover:bg-tertiary-200 active:bg-tertiary-300 dark:bg-tertiary-800 dark:hover:bg-tertiary-700 dark:active:bg-tertiary-600 pl-8 -ml-8 hover:w-20 w-14 transition-all duration-150 ease-in-out`}>
                 <MdChevronRight className="size-6 shrink-0 text-tertiary-500 justify-self-end" />
             </Link>
         </div>

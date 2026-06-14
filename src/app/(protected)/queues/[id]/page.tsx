@@ -1,26 +1,18 @@
-import React, { FC } from "react";
-import { QueueContent } from "@/components/queues/queue-content";
-import {verifySession} from "@/actions/session";
-import {redirect} from "next/navigation";
+import React, {FC} from "react";
+import {QueueContent} from "@/components/new/queues/queue-content";
 
 interface QueuePageProps {
     params: Promise<{ id: string }>;
 }
 
-const QueuePage: FC<QueuePageProps> = async ({ params }) => {
-    const session = await verifySession();
-
-    if (!session?.userId) {
-        redirect("/home");
-    }
-
+const QueuePage: FC<QueuePageProps> = async ({params}) => {
     const id = Number((await params).id);
 
-    if (id === null) {
-        return null;
+    if (isNaN(id)) {
+        return <div>Invalid queue ID</div>;
     }
 
-    return <QueueContent id={id} />;
+    return <QueueContent id={id}/>;
 };
 
 export default QueuePage;

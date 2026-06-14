@@ -1,10 +1,10 @@
 "use client";
 
 import React, {FC} from "react";
-import QueueHeader from "@/components/queues/queue-header";
+import QueueHeader from "@/components/new/queues/queue-header";
 import useSWR from "swr";
 import {fetcher} from "@/utils/fetcher";
-import QueueHeaderSkeleton from "@/components/queues/queue-header-skeleton";
+import QueueHeaderSkeleton from "@/components/new/queues/queue-header-skeleton";
 import {API_URL} from "@/lib/constants";
 import Requests from "@/components/new/requests";
 import {Order, RequestSortingEnum} from "@/types/sorting";

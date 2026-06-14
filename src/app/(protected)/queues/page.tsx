@@ -1,6 +1,6 @@
 import React from 'react';
-import CreateQueueButton from "@/components/queues/create-queue-button";
-import Queues from "@/components/queues/queues";
+import CreateQueueButton from "@/components/new/queues/create-queue-button";
+import Queues from "@/components/new/queues/queues";
 
 const QueuesPage = () => {
     return (
@@ -9,9 +9,9 @@ const QueuesPage = () => {
                 <div className="text-2xl font-semibold">
                     Queues
                 </div>
-                <CreateQueueButton />
+                <CreateQueueButton/>
             </div>
-            <Queues />
+            <Queues/>
         </div>
     );
 };
