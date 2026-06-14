@@ -1,6 +1,99 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+
+  --color-request-accepted: #a347eb;
+  --color-request-rejected: #e82025;
+  --color-request-pending: #777777;
+
+  --color-beatmapset-verified: #e82025;
+  --color-beatmapset-unverified: #ffdad6;
+
+  --color-primary-10: #fffbff;
+  --color-primary-20: #fff8f7;
+  --color-primary-50: #ffedea;
+  --color-primary-100: #ffdad6;
+  --color-primary-200: #ffb4ab;
+  --color-primary-300: #ff897e;
+  --color-primary-400: #ff544b;
+  --color-primary-500: #e82025;
+  --color-primary-600: #c00013;
+  --color-primary-650: #a90010;
+  --color-primary-700: #93000c;
+  --color-primary-750: #7d0009;
+  --color-primary-800: #690006;
+  --color-primary-850: #540004;
+  --color-primary-900: #410002;
+  --color-primary-950: #2d0001;
+
+  --color-tertiary-10: #fcfcfc;
+  --color-tertiary-20: #f9f9f9;
+  --color-tertiary-50: #f1f1f1;
+  --color-tertiary-100: #e2e2e2;
+  --color-tertiary-200: #c6c6c6;
+  --color-tertiary-300: #ababab;
+  --color-tertiary-400: #919191;
+  --color-tertiary-500: #777777;
+  --color-tertiary-600: #5e5e5e;
+  --color-tertiary-650: #525252;
+  --color-tertiary-700: #474747;
+  --color-tertiary-750: #3b3b3b;
+  --color-tertiary-800: #303030;
+  --color-tertiary-850: #262626;
+  --color-tertiary-900: #1b1b1b;
+  --color-tertiary-950: #111111;
+
+  --color-stars-0: #aaaaaa;
+  --color-stars-1: #4290fb;
+  --color-stars-2: #4fffd5;
+  --color-stars-9: #000000;
+  --color-stars-1_25: #4fc0ff;
+  --color-stars-2_5: #7cff4f;
+  --color-stars-3_3: #f6f05c;
+  --color-stars-4_2: #ff8068;
+  --color-stars-4_9: #ff4e6f;
+  --color-stars-5_8: #c645b8;
+  --color-stars-6_7: #6563de;
+  --color-stars-7_7: #18158e;
+
+  @keyframes wiggle {
+    0%,
+    50% {
+      transform: rotate(0deg);
+    }
+    10% {
+      transform: rotate(3deg);
+    }
+    20% {
+      transform: rotate(-3deg);
+    }
+    30% {
+      transform: rotate(3deg);
+    }
+    40% {
+      transform: rotate(-3deg);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 .single-thumb .range-slider__thumb[data-lower] {
     width: 0;
@@ -8,26 +101,26 @@
 }
 
 .range-slider .range-slider__range {
-    background: theme('colors.primary.500');
+    background: var(--color-primary-500);
     border-radius: 0.5rem;
 }
 
 .range-slider .range-slider__thumb {
-    background: theme('colors.primary.500');
+    background: var(--color-primary-500);
     border-radius: 50%;
     width: 1rem;
     height: 1rem;
 }
 
 .range-slider {
-    background-color: theme('colors.tertiary.300');
+    background-color: var(--color-tertiary-300);
     border-radius: 0.5rem;
     height: 0.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
     .range-slider {
-        background-color: theme('colors.tertiary.700');
+        background-color: var(--color-tertiary-700);
     }
 }
 
