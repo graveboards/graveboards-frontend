@@ -13,7 +13,7 @@ export class ColorUtils {
 
     static toHexFromColor4(color: Color4): string {
         const to255 = (c: number) => Math.round(c * 255);
-        return `#${((1 << 24) + (to255(color.r) << 16) + (to255(color.g) << 8) + to255(color.b)).toString(16).slice(1)}`;
+        return `#${((1 << 24) + (to255(color.r) << 16) + (to255(color.g) << 8) + to255(color.b)).toString(16).slice(1)}${((1 << 8) + to255(color.a)).toString(16).slice(1)}`;
     }
 
     static toHexFromRgb(r: number, g: number, b: number): string {

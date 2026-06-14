@@ -1,19 +1,16 @@
 "use client";
 
-import React, { FC, useActionState, useEffect, useState } from "react";
-import { Request, RequestStatus } from "@/types/request";
-import { MdChevronRight, MdComment, MdPlayArrow, MdRadioButtonChecked } from "react-icons/md";
-import { ColorUtils } from "@/utils/color-utils";
+import React, {FC, useActionState, useEffect, useState} from "react";
+import {Request, RequestStatus} from "@/types/request";
+import {MdChevronRight, MdComment, MdPlayArrow, MdRadioButtonChecked} from "react-icons/md";
+import {ColorUtils} from "@/utils/color-utils";
 import RequestStatusBadge from "@/components/requests/request-status-badge";
 import SelectRequestStatus from "@/components/requests/manage/select-request-status";
 import clsx from "clsx";
-import { useAuth } from "@/context/auth-context";
-import { formatTime } from "@/utils/time-utils";
+import {formatTime} from "@/utils/time-utils";
 import {Button} from "@/components/ui/button";
-import { usePreview } from "@/context/preview-context";
-import { patchRequest } from "@/actions/requests";
-import SelectBeatmapsetStatus from "@/components/requests/manage/select-beatmapset-status";
-import BeatmapsetStatusBadge from "@/components/beatmapsets/beatmapset-status-badge";
+import {usePreview} from "@/context/preview-context";
+import {patchRequest} from "@/actions/requests";
 import Link from "next/link";
 import toast from "react-hot-toast";
 
@@ -22,11 +19,10 @@ interface RequestCardProps {
     editMode?: boolean;
 }
 
-const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) => {
+const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
     const [status, setStatus] = useState<RequestStatus>(request.status);
 
-    const { isAdmin } = useAuth();
-    const { setSrc } = usePreview();
+    const {setSrc} = usePreview();
 
     const [commentOpen, setCommentOpen] = useState(false);
 
@@ -34,17 +30,17 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
 
     const [selectRequestStatusState, dispatchSelectRequestStatus, isSelectRequestStatusPending] = useActionState(async (prevState: {
         status: RequestStatus
-    }, { status }: { status: RequestStatus }) => {
-        const result = await patchRequest(request.id, { status });
+    }, {status}: { status: RequestStatus }) => {
+        const result = await patchRequest(request.id, {status});
 
         if (result) {
             toast.success("Request status updated");
-            return { status };
+            return {status};
         } else {
             toast.error("Failed to update request status");
             return prevState;
         }
-    }, { status: request.status });
+    }, {status: request.status});
 
     useEffect(() => {
         if (status !== selectRequestStatusState.status) {
@@ -55,12 +51,12 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
     return (
         <div className="flex rounded-xl h-24">
             <div
-                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-center bg-no-repeat bg-[size:215%]"
-                style={{ backgroundImage: `url(${request.beatmapset_snapshot?.covers["cover"]})` }}>
+                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-center bg-no-repeat bg-size-[215%]"
+                style={{backgroundImage: `url(${request.beatmapset_snapshot?.covers["cover"]})`}}>
                 <div className="flex gap-1.5">
-                    <Button className="px-1.5 gap-1 h-8.5 font-semibold text-sm"
+                    <Button className="px-1.5 gap-1 h-6.5 font-semibold text-sm"
                             onClick={() => setSrc(request.beatmapset_snapshot?.preview_url)}>
-                        <MdPlayArrow className="size-4 shrink-0" />
+                        <MdPlayArrow className="size-4 shrink-0"/>
                         PREVIEW
                     </Button>
                     <div
@@ -72,9 +68,7 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
             <div
                 className={clsx(
                     `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-4 px-4 relative tracking-wide rounded-xl xl:rounded-l-none xl:rounded-r-xl`,
-                    isAdmin ?
-                        "lg:grid-cols-[repeat(3,minmax(0,1fr)),1.5rem,repeat(2,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr)),1.5rem,repeat(2,minmax(0,1fr))] grid-cols-3" :
-                        "lg:grid-cols-[repeat(3,minmax(0,1fr)),1.5rem,repeat(1,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr)),1.5rem,repeat(1,minmax(0,1fr))] grid-cols-2"
+                    "lg:grid-cols-[repeat(3,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] grid-cols-2"
                 )}>
                 <div className="truncate">
                     <a href={`https://osu.ppy.sh/beatmapsets/${request.beatmapset_id}`}
@@ -87,7 +81,7 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
                     </div>
 
                     <div className="text-xs text-tertiary-500 dark:text-tertiary-400 truncate">
-                        Mapped by <a href={`https://osu.ppy.sh/users/${request.beatmapset_snapshot?.user_id}`}
+                        Hosted by <a href={`https://osu.ppy.sh/users/${request.beatmapset_snapshot?.user_id}`}
                                      className="font-semibold"
                                      target="_blank">{request.beatmapset_snapshot?.user_profile.username}</a>
                     </div>
@@ -102,7 +96,7 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
                 <div className="hidden lg:flex items-center gap-2 truncate">
                     <a href={`https://osu.ppy.sh/users/${request.user_id}`}
                        className="size-10 shrink-0 bg-gray-500 rounded-full bg-cover" target="_blank"
-                       style={{ backgroundImage: `url(${request.user_profile?.avatar_url})` }}></a>
+                       style={{backgroundImage: `url(${request.user_profile?.avatar_url})`}}></a>
                     <div className="leading-5 truncate">
                         <div className="text-xs text-tertiary-500 dark:text-tertiary-400 truncate">
                             Requested by
@@ -123,7 +117,7 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
                 <div
                     className="hidden sm:flex flex-col gap-0 transition-[gap] duration-300 delay-300 ease-out group hover:gap-2 hover:delay-0">
                     <div className="flex items-center gap-1 self-stretch">
-                        <MdRadioButtonChecked className="size-4 shrink-0 text-tertiary-500 dark:text-tertiary-400" />
+                        <MdRadioButtonChecked className="size-4 shrink-0 text-tertiary-500 dark:text-tertiary-400"/>
                         <div className="flex items-center gap-0.5">
                             {
                                 request.beatmapset_snapshot?.beatmap_snapshots
@@ -131,7 +125,7 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
                                     .slice(0, 6)
                                     .map((beatmap, index) => (
                                         <div key={index} className="w-1.5 h-4 bg-gray-500 rounded-full"
-                                             style={{ backgroundColor: ColorUtils.forStarRating(beatmap.difficulty_rating) }}></div>
+                                             style={{backgroundColor: ColorUtils.forStarRating(beatmap.difficulty_rating)}}></div>
                                     ))
                             }
 
@@ -169,51 +163,27 @@ const ListRequestCard: FC<RequestCardProps> = ({ request, editMode = false }) =>
                     }
                 </div>
 
-                {
-                    editMode ? (
-                        <>
-                            {
-                                isAdmin && (
-                                    <div className="flex items-center justify-center">
-                                        <SelectBeatmapsetStatus
-                                            disabled={true}
-                                            initialStatus={request.beatmapset_snapshot?.verified ? "verified" : "unverified"} />
-                                    </div>
-                                )
-                            }
-                            <form ref={formRef} action={() => dispatchSelectRequestStatus({ status })}>
-                                <div className="flex items-center justify-center">
-                                    <SelectRequestStatus
-                                        name="status"
-                                        initialStatus={selectRequestStatusState.status}
-                                        onSelect={(item) => setStatus(item)}
-                                        isPending={isSelectRequestStatusPending} />
-                                </div>
-                            </form>
-                        </>
-                    ) : (
-                        <>
-                            {
-                                isAdmin && (
-                                    <div className="flex items-center justify-center">
-                                        <BeatmapsetStatusBadge
-                                            status={request.beatmapset_snapshot?.verified ? "verified" : "unverified"} />
-                                    </div>
-                                )
-                            }
-
-                            <div className="flex items-center justify-center">
-                                <RequestStatusBadge status={selectRequestStatusState.status} />
-                            </div>
-                        </>
-                    )
-                }
+                {editMode ? (
+                    <form ref={formRef} action={() => dispatchSelectRequestStatus({status})}>
+                        <div className="flex items-center justify-center">
+                            <SelectRequestStatus
+                                name="status"
+                                initialStatus={selectRequestStatusState.status}
+                                onSelect={(item) => setStatus(item)}
+                                isPending={isSelectRequestStatusPending}/>
+                        </div>
+                    </form>
+                ) : (
+                    <div className="flex items-center justify-center">
+                        <RequestStatusBadge status={selectRequestStatusState.status}/>
+                    </div>
+                )}
             </div>
 
             <a href={`https://osu.ppy.sh/beatmapsets/${request.beatmapset_id}`}
                target="_blank"
-               className={`h-full flex items-center justify-center rounded-r-xl bg-tertiary-100 hover:bg-tertiary-200 active:bg-tertiary-300 dark:bg-tertiary-800 hover:dark:bg-tertiary-700 active:dark:bg-tertiary-600 pl-8 -ml-8 hover:w-20 w-14 transition-all duration-150 ease-in-out`}>
-                <MdChevronRight className="size-6 shrink-0 text-tertiary-500 justify-self-end" />
+               className={`h-full flex items-center justify-center rounded-r-xl bg-tertiary-100 hover:bg-tertiary-200 active:bg-tertiary-300 dark:bg-tertiary-800 dark:hover:bg-tertiary-700 dark:active:bg-tertiary-600 pl-8 -ml-8 hover:w-20 w-14 transition-all duration-150 ease-in-out`}>
+                <MdChevronRight className="size-6 shrink-0 text-tertiary-500 justify-self-end"/>
             </a>
         </div>
     );

@@ -1,3 +1,5 @@
+"use client";
+
 import React, {useEffect, useState} from 'react';
 import FilterRangeField from "@/components/new/filters/filter-range-field";
 import StarRatingRangeSlider from "@/components/new/filters/star-rating/star-rating-range-slider";

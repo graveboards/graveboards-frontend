@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils";
 import {Slot} from "@radix-ui/react-slot";
 
 const buttonVariants = cva(
-    'whitespace-nowrap flex items-center justify-center gap-2 overflow-hidden shrink-0 transition-colors duration-300 ease-in-out',
+    'whitespace-nowrap flex items-center justify-center gap-2 overflow-hidden shrink-0 transition-colors,opacity duration-300 ease-in-out cursor-pointer',
     {
         variants: {
             size: {
@@ -14,7 +14,7 @@ const buttonVariants = cva(
                 'lg': 'h-12'
             },
             rounded: {
-                'sm': 'rounded-sm px-2',
+                'sm': 'rounded-xs px-2',
                 'md': 'rounded-md px-2',
                 'lg': 'rounded-lg px-4',
                 'xl': 'rounded-xl px-6',
@@ -23,8 +23,8 @@ const buttonVariants = cva(
                 'full': 'rounded-full px-6',
             },
             variant: {
-                'fill': 'text-white bg-primary-500 hover:bg-primary-400 active:bg-primary-300 disabled:text-tertiary-600 disabled:bg-tertiary-200 disabled:dark:text-tertiary-900 disabled:dark:bg-tertiary-500',
-                'outline': 'text-primary-500 bg-transparent border-2 border-primary-500 hover:bg-primary-100 active:bg-primary-200 dark:border-primary-500 dark:hover:bg-primary-400 dark:hover:text-white dark:active:bg-primary-300 dark:active:text-white disabled:text-tertiary-600 disabled:border-tertiary-600 disabled:dark:text-tertiary-700 disabled:dark:border-tertiary-700 disabled:dark:border-2',
+                'fill': 'text-white bg-primary-500 hover:bg-primary-400 active:bg-primary-300 disabled:text-tertiary-600 disabled:bg-tertiary-200 dark:disabled:text-tertiary-900 dark:disabled:bg-tertiary-500',
+                'outline-solid': 'text-primary-500 bg-transparent border-2 border-primary-500 hover:bg-primary-100 active:bg-primary-200 dark:border-primary-500 dark:hover:bg-primary-400 dark:hover:text-white dark:active:bg-primary-300 dark:active:text-white disabled:text-tertiary-600 disabled:border-tertiary-600 dark:disabled:text-tertiary-700 dark:disabled:border-tertiary-700 dark:disabled:border-2',
                 'clear': 'text-tertiary-500 dark:text-tertiary-400 hover:text-tertiary-800 dark:hover:text-tertiary-100 bg-transparent hover:bg-tertiary-100 dark:hover:bg-tertiary-900 active:bg-tertiary-200 dark:active:bg-tertiary-800',
             },
         },

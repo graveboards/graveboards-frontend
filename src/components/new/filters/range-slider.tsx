@@ -52,7 +52,7 @@ const RangeSlider = ({
                 {normalizedValues.map((value, index) => (
                     <Slider.Thumb
                         key={`${index}-${value}`}
-                        className="relative rounded-full flex items-center justify-center size-4 whitespace-nowrap transition-[color] bg-primary-500 text-white"
+                        className="relative rounded-full flex items-center justify-center size-4 bg-primary-500"
                     />
                 ))}
             </Slider.Root>

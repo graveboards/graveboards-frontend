@@ -32,7 +32,7 @@ const FilterRangeField = ({values, setValues, title, onRangeChange}: {
                             </div>
                             <input
                                 className=
-                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-none border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 focus:dark:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
+                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-hidden border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 dark:focus:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
                                 type="text"
                                 placeholder="Higher than"
                                 value={values[0]}
@@ -45,7 +45,7 @@ const FilterRangeField = ({values, setValues, title, onRangeChange}: {
                             </div>
                             <input
                                 className=
-                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-none border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 focus:dark:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
+                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-hidden border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 dark:focus:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
                                 type="text"
                                 placeholder="Lower than"
                                 value={values[1]}
@@ -57,7 +57,7 @@ const FilterRangeField = ({values, setValues, title, onRangeChange}: {
             ) : (
                 <input
                     className=
-                        "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-none border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 focus:dark:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
+                        "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-hidden border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 dark:focus:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
                     type="text"
                     placeholder={title}
                     value={values[0]}

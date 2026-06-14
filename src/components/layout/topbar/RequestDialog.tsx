@@ -4,7 +4,7 @@ import {type ChangeEvent, forwardRef, useCallback, useState} from "react";
 import {createPortal} from "react-dom";
 import Dialog from "@/components/shared/dialog";
 import {Button} from "@/components/ui/button";
-import QueuesSelect from "@/components/queues/queues-select";
+import QueuesSelect from "@/components/new/queues/queues-select";
 
 interface RequestDialogProps {
     onClose: () => void;
@@ -53,7 +53,7 @@ const RequestDialog = forwardRef<HTMLDialogElement, RequestDialogProps>(
                             </span>
                             <input
                                 className=
-                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-none border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 focus:dark:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
+                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-hidden border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 dark:focus:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
                                 type="url"
                                 placeholder="Beatmapset Link"
                                 value={formState.beatmapLink}
@@ -78,7 +78,7 @@ const RequestDialog = forwardRef<HTMLDialogElement, RequestDialogProps>(
                         </span>
                             <textarea
                                 className=
-                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-none border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 focus:dark:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
+                                    "w-full sm:w-auto placeholder-tertiary-500 dark:placeholder-tertiary-400 whitespace-nowrap p-2 rounded-lg dark:bg-tertiary-900 outline-hidden border flex items-center justify-between gap-1 transition-colors duration-300 ease-in-out focus:border-primary-500 focus:bg-tertiary-100 dark:focus:bg-tertiary-800 border-tertiary-300 dark:border-tertiary-700"
                                 placeholder="Comment"
                                 value={formState.comment}
                                 onChange={handleCommentChange}
