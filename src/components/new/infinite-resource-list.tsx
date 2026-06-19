@@ -106,6 +106,7 @@ export function InfiniteResourceList<K extends EndpointKey>({
     }, [isEmpty, isReachingEnd, isValidating, items.length, setSize, size]);
 
     if (error) {
+        console.error("InfiniteResourceList error:", error);
         return (
             <div className="text-center text-2xl font-semibold text-red-500">
                 Failed to load resources

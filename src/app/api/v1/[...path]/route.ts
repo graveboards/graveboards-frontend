@@ -31,6 +31,9 @@ const createHeaders = (headers: Headers) => {
     const forwardedHeaders = new Headers(headers);
 
     HOP_BY_HOP_HEADERS.forEach((header) => forwardedHeaders.delete(header));
+    forwardedHeaders.delete("content-length");
+    forwardedHeaders.delete("content-encoding");
+    forwardedHeaders.delete("transfer-encoding");
 
     return forwardedHeaders;
 };
@@ -49,7 +52,8 @@ const proxyRequest = async (request: NextRequest, context: RouteContext) => {
 
     const responseHeaders = createHeaders(response.headers);
 
-    return new Response(response.body, {
+    const text = await response.text();
+    return new Response(text, {
         status: response.status,
         statusText: response.statusText,
         headers: responseHeaders,

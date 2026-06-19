@@ -96,6 +96,7 @@ export function makeSWRInfiniteWrapper(apiUrl: string, fetcher: <T>(url: string)
             items,
             isEmpty: Boolean(isEmpty),
             isReachingEnd,
+            error: swr.error,
         };
     }
 }
