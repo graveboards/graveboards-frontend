@@ -1,96 +1,126 @@
 # Graveboards Frontend
 
-## Quickstart (Docker)
+> Next.js/React frontend for Graveboards
 
-1. Clone the repository: `git clone https://github.com/graveboards/graveboards-frontend.git && cd graveboards-frontend`
-2. Ensure Docker is installed and running on your system
-3. Ensure the backend container is running and reachable as `graveboards-backend` on the same Docker network
-   ```bash
-   docker network create graveboards
-   docker network connect graveboards graveboards-backend
-   ```
-4. Build the frontend image:
-   ```bash
-   docker build -t graveboards-frontend .
-   ```
-5. Run the frontend container:
-   ```bash
-   docker run --name graveboards-frontend --network graveboards -p 3000:3000 -e SESSION_SECRET=your-private-session-secret -e INTERNAL_API_URL=http://graveboards-backend:8000/api/v1 graveboards-frontend
-   ```
-6. The frontend should now be running on http://localhost:3000
-
-The frontend defaults browser API calls to `/api/v1`. In Docker, those requests are handled by the frontend container and proxied to `INTERNAL_API_URL`, which should point at the `graveboards-backend` container.
-
-If the `graveboards` network already exists or the backend container is already connected, Docker may print a harmless warning.
-
-## Installation (Non-docker)
+## Quick Start
 
 ### Prerequisites
 
+- Docker Engine 24+
+- Docker Compose 2.0+
+- Git
 - Node.js 22+
 - npm
-- Graveboards Backend
 
-### Setup
+### Installation
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/graveboards/graveboards-frontend.git
-    cd graveboards-frontend
-    ```
+```bash
+# Clone all repositories
+git clone https://github.com/graveboards/graveboards-frontend.git
+git clone https://github.com/graveboards/graveboards-backend.git
+git clone https://github.com/graveboards/graveboards-deploy.git
 
-2. Install the dependencies:
-    ```bash
-    npm install
-    ```
-
-3. Create the `.env.local` file:
-    ```shell
-    NEXT_PUBLIC_API_URL=/api/v1
-    INTERNAL_API_URL=http://localhost:8000/api/v1
-    SESSION_SECRET=<private-session-secret>
-    ```
-
-4. Run the development server:
-    ```bash
-    npm run dev
-    ```
-
-5. Open http://localhost:3000 in your browser.
-
-## Management (docker)
-
-```text
-docker build -t graveboards-frontend .       - Build project image
-docker run --name graveboards-frontend ...   - Start frontend container
-docker logs -f graveboards-frontend          - View frontend logs
-docker stop graveboards-frontend             - Stop frontend container
-docker rm graveboards-frontend               - Remove frontend container
-docker exec -it graveboards-frontend sh      - Open frontend shell
+# Start all services
+cd graveboards-deploy
+./deploy.sh up dev
 ```
 
-## Management (non-docker)
+**Access:**
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000
+- API Docs: http://localhost:8000/api/v1/ui
 
-```text
-npm run dev      - Start development server
-npm run build    - Create production build
-npm run start    - Start production server after building
+---
+
+## Management
+
+### Orchestrator (Docker)
+
+```bash
+cd graveboards-deploy
+./deploy.sh up [mode]               # Start services
+./deploy.sh down [mode]             # Stop services
+./deploy.sh logs [mode] [service]   # View logs
+./deploy.sh test                    # Run tests
+./deploy.sh build [mode]            # Build images
+./deploy.sh status                  # Show status
+./deploy.sh clean                   # Remove volumes and images
 ```
+
+**Modes:**
+- `dev` - Development (default)
+- `prod` - Production
+- `test` - Testing
+
+**Services:**
+- `all` - All services (default)
+- `backend` - Backend service
+- `frontend` - Frontend service
+- `postgres` - PostgreSQL database
+- `redis` - Redis cache
+
+```
+### Frontend (npm)
+
+```bash
+cd graveboards-frontend
+npm run dev      # Development server
+npm run build    # Production build
+npm run lint     # Lint code
+npm start        # Production server
+```
+
+---
 
 ## Configuration
 
-```text
-NEXT_PUBLIC_API_URL   Public API URL used by browser code. Defaults to /api/v1.
-INTERNAL_API_URL      Server-side backend URL. In Docker, use http://graveboards-backend:8000/api/v1.
-SESSION_SECRET        Secret used to sign frontend session cookies.
+### Environment Variables
+
+Copy `.env.local.example` to `.env.local` for development:
+
+- `NEXT_PUBLIC_API_URL` - Public API URL (browser) | default: /api/v1
+- `INTERNAL_API_URL` - Backend API URL (server-side) | default: http://localhost:8000/api/v1
+- `SESSION_SECRET` - Session signing key (32+ chars)
+
+---
+
+## Development
+
+### Without Docker
+
+```bash
+# Setup
+npm install
+cp .env.local.example .env.local  # Configure environment
+
+# Run
+npm run dev
 ```
+
+### With Docker
+
+**Development Mode (Hot-Reload):**
+```bash
+docker build --target development -t graveboards-frontend:dev .
+docker run -p 3000:3000 --env-file .env.local graveboards-frontend:dev
+```
+
+**Production Mode:**
+```bash
+docker build --target production -t graveboards-frontend:latest .
+docker run -p 3000:3000 --env-file .env.local graveboards-frontend:latest
+```
+
+---
 
 ## Documentation
 
-The frontend is available locally at: http://localhost:3000
+- [Backend README](../graveboards-backend/README.md)
+- [Architecture Docs](../graveboards-backend/docs)
+- [Production Deployment Guide](../graveboards-deploy/docs/PRODUCTION_DEPLOYMENT.md)
 
-The backend API spec can be viewed locally at: http://localhost:8000/api/v1/ui
+---
 
 ## License
 
-No license file is currently included in this repository.
+MIT License
