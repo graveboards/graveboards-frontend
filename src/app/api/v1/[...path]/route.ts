@@ -20,15 +20,33 @@ const HOP_BY_HOP_HEADERS = new Set([
     "host",
 ]);
 
+// Resolved lazily (not at module load): during `next build` page-data
+// collection, INTERNAL_API_URL is unset so SERVER_API_URL falls back to the
+// relative "/api/v1", and `new URL()` on a relative string throws. At request
+// time in the container INTERNAL_API_URL is always an absolute URL.
+const getBackendOrigin = (): string | null => {
+    try {
+        return new URL(SERVER_API_URL).origin;
+    } catch {
+        return null;
+    }
+};
+
 const createBackendUrl = async (request: NextRequest, context: RouteContext) => {
     const {path} = await context.params;
-    const url = new URL(`${SERVER_API_URL}/${path.map(encodeURIComponent).join("/")}`);
+    // Preserve a trailing slash: the catch-all segments drop it, but the backend
+    // (Connexion) distinguishes "/api/v1/ui" from "/api/v1/ui/" and redirects the
+    // former to the latter. Forwarding the slash verbatim avoids a redirect loop
+    // and keeps Swagger UI's relative asset URLs resolving correctly.
+    const trailingSlash = request.nextUrl.pathname.endsWith("/") ? "/" : "";
+    const encodedPath = path.map(encodeURIComponent).join("/");
+    const url = new URL(`${SERVER_API_URL}/${encodedPath}${trailingSlash}`);
     url.search = request.nextUrl.search;
 
     return url;
 };
 
-const createHeaders = (headers: Headers, token?: string) => {
+const stripHopByHopHeaders = (headers: Headers) => {
     const forwardedHeaders = new Headers(headers);
 
     HOP_BY_HOP_HEADERS.forEach((header) => forwardedHeaders.delete(header));
@@ -36,16 +54,46 @@ const createHeaders = (headers: Headers, token?: string) => {
     forwardedHeaders.delete("content-encoding");
     forwardedHeaders.delete("transfer-encoding");
 
-    // The browser authenticates to the Next app via the httpOnly `session` cookie, but the backend expects a Bearer JWT.
-    // Never leak the session cookie downstream; instead inject the token decrypted from the session.
-    forwardedHeaders.delete("cookie");
-    forwardedHeaders.delete("authorization");
+    return forwardedHeaders;
+};
 
-    if (token) {
+const createRequestHeaders = (headers: Headers, token?: string) => {
+    const forwardedHeaders = stripHopByHopHeaders(headers);
+
+    // Never leak the browser's httpOnly `session` cookie to the backend.
+    forwardedHeaders.delete("cookie");
+
+    // Authenticate same-origin website calls with the token decrypted from the
+    // session. An explicit Authorization header (e.g. a Bearer token typed into
+    // Swagger UI's "Authorize" box, or a direct API consumer) is left untouched
+    // so the public API stays usable without a session.
+    if (token && !forwardedHeaders.has("authorization")) {
         forwardedHeaders.set("authorization", `Bearer ${token}`);
     }
 
     return forwardedHeaders;
+};
+
+// Rewrite redirect targets that point back at the internal backend origin so the
+// browser follows them against the public origin (graveboards.net) instead of the
+// unreachable "http://graveboards-backend:8000".
+const rewriteLocationHeader = (headers: Headers) => {
+    const location = headers.get("location");
+    const backendOrigin = getBackendOrigin();
+
+    if (!location || !backendOrigin) {
+        return;
+    }
+
+    try {
+        const resolved = new URL(location, backendOrigin);
+
+        if (resolved.origin === backendOrigin) {
+            headers.set("location", resolved.pathname + resolved.search + resolved.hash);
+        }
+    } catch {
+        // Non-absolute / malformed Location: leave it as the backend sent it.
+    }
 };
 
 const proxyRequest = async (request: NextRequest, context: RouteContext) => {
@@ -56,16 +104,23 @@ const proxyRequest = async (request: NextRequest, context: RouteContext) => {
 
     const response = await fetch(await createBackendUrl(request, context), {
         method,
-        headers: createHeaders(request.headers, session?.token),
+        headers: createRequestHeaders(request.headers, session?.token),
         body,
         cache: "no-store",
         redirect: "manual",
     });
 
-    const responseHeaders = createHeaders(response.headers);
+    const responseHeaders = stripHopByHopHeaders(response.headers);
+    rewriteLocationHeader(responseHeaders);
 
-    const text = await response.text();
-    return new Response(text, {
+    // Buffer the (already decompressed) body as bytes so binary assets such as
+    // Swagger UI's fonts and icons pass through intact — `response.text()` would
+    // corrupt them, and a raw stream can mismatch the recomputed content-length.
+    const responseBody = response.status === 204 || response.status === 304
+        ? null
+        : await response.arrayBuffer();
+
+    return new Response(responseBody, {
         status: response.status,
         statusText: response.statusText,
         headers: responseHeaders,
