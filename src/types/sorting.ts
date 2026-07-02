@@ -84,7 +84,8 @@ export enum BeatmapsetSnapshotSortingEnum {
     SRGapsAvg = "BeatmapsetSnapshot.sr_gaps_avg",
     HitLengthsMin = "BeatmapsetSnapshot.hit_lengths_min",
     HitLengthsMax = "BeatmapsetSnapshot.hit_lengths_max",
-    HitLengthsAvg = "BeatmapsetSnapshot.hit_lengths_avg"
+    HitLengthsAvg = "BeatmapsetSnapshot.hit_lengths_avg",
+    ListingUpdatedAt = "BeatmapsetListing.updated_at"
 }
 
 export enum BeatmapSnapshotSortingEnum {

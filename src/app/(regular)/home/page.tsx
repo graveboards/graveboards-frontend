@@ -13,7 +13,7 @@ const Home = () => {
                 title="Latest Beatmapsets"
                 defaultSorting={[
                     {
-                        field: BeatmapsetSnapshotSortingEnum.LastUpdated,
+                        field: BeatmapsetSnapshotSortingEnum.ListingUpdatedAt,
                         order: Order.Descending,
                     }
                 ]}
