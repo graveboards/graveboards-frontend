@@ -22,7 +22,8 @@ export const getBaseUrl = (request: NextRequest): string => {
     const host = forwardedHost ?? request.headers.get("host");
 
     if (host) {
-        const proto = request.headers.get("x-forwarded-proto") ?? "https";
+        // Prefer the proxy's proto; otherwise use whatever protocol Next actually saw.
+        const proto = request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(/:$/, "");
         return `${proto}://${host}`;
     }
 
