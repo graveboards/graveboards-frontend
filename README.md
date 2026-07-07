@@ -1,6 +1,6 @@
 # Graveboards Frontend
 
-> Next.js/React frontend for Graveboards
+> Next.js 15 / React 19 frontend for Graveboards
 
 ## Quick Start
 
@@ -48,25 +48,18 @@ cd graveboards-deploy
 ```
 
 **Modes:**
-- `dev` - Development (default)
-- `prod` - Production
-- `test` - Testing
+- `dev`      - Development (default, hot-reload)
+- `prod`     - Production (optimized standalone build)
+- `prod-nas` - Production (NAS volumes)
+- `test`     - Testing (no frontend)
 
-**Services:**
-- `all` - All services (default)
-- `backend` - Backend service
-- `frontend` - Frontend service
-- `postgres` - PostgreSQL database
-- `redis` - Redis cache
-
-```
 ### Frontend (npm)
 
 ```bash
 cd graveboards-frontend
-npm run dev      # Development server
-npm run build    # Production build
-npm run lint     # Lint code
+npm run dev      # Development server (hot-reload)
+npm run build    # Production build (standalone output)
+npm run lint     # Lint code (next lint)
 npm start        # Production server
 ```
 
@@ -78,9 +71,16 @@ npm start        # Production server
 
 Copy `.env.local.example` to `.env.local` for development:
 
-- `NEXT_PUBLIC_API_URL` - Public API URL (browser) | default: /api/v1
-- `INTERNAL_API_URL` - Backend API URL (server-side) | default: http://localhost:8000/api/v1
-- `SESSION_SECRET` - Session signing key (32+ chars)
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `NEXT_PUBLIC_API_URL` | `/api/v1` | Public API URL (browser/client code) |
+| `INTERNAL_API_URL` | `http://localhost:8000/api/v1` | Backend API URL (server-side only, proxied to backend) |
+| `SESSION_SECRET` | _(required)_ | JWT signing key for session cookies (32+ chars) |
+| `APP_URL` | `http://localhost:3000` | Canonical public origin for absolute URLs and redirects |
+
+**Docker build args (defaults):**
+- `NEXT_PUBLIC_API_URL=/api/v1`
+- `INTERNAL_API_URL=http://graveboards-backend:8000/api/v1` (internal Docker network)
 
 ---
 
@@ -99,13 +99,15 @@ npm run dev
 
 ### With Docker
 
+The Dockerfile uses a multi-stage build with four stages: `deps`, `builder`, `development`, and `production`.
+
 **Development Mode (Hot-Reload):**
 ```bash
 docker build --target development -t graveboards-frontend:dev .
 docker run -p 3000:3000 --env-file .env.local graveboards-frontend:dev
 ```
 
-**Production Mode:**
+**Production Mode (Standalone):**
 ```bash
 docker build --target production -t graveboards-frontend:latest .
 docker run -p 3000:3000 --env-file .env.local graveboards-frontend:latest
