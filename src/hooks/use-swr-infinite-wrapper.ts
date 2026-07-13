@@ -67,6 +67,7 @@ export function makeSWRInfiniteWrapper(apiUrl: string, fetcher: <T>(url: string)
                     limit,
                     offset,
                     search: params.search && params.search?.length > 0 ? params.search : undefined,
+                    search_mode: "engine",
                     sorting: sorting?.map((s) => JSON.stringify(s)),
                     filters,
                     include,

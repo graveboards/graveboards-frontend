@@ -6,6 +6,7 @@ export type SearchQuery = {
     search_terms?: SearchQueryTerm;
     sorting?: SearchSorting;
     filters?: SearchFilters;
+    search_mode?: SearchQueryMode;
 }
 
 export type SearchResource = {
@@ -14,6 +15,8 @@ export type SearchResource = {
 }
 
 export type SearchQueryScope = "beatmaps" | "beatmapsets" | "queues" | "requests";
+
+export type SearchQueryMode = "simple" | "engine";
 
 export type SearchQueryTerm = {
     terms?: string | string[];
