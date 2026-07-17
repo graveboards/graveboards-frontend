@@ -34,24 +34,36 @@ cd graveboards-deploy
 
 ## Management
 
-### Orchestrator (Docker)
+### Orchestrator (deploy.sh)
 
 ```bash
 cd graveboards-deploy
-./deploy.sh up [mode]               # Start services
-./deploy.sh down [mode]             # Stop services
-./deploy.sh logs [mode] [service]   # View logs
-./deploy.sh test                    # Run tests
-./deploy.sh build [mode]            # Build images
-./deploy.sh status                  # Show status
-./deploy.sh clean                   # Remove volumes and images
+./deploy.sh up [mode] [--build] [--no-monitoring] [--nas] [--traefik] [--monitoring-ports] [--monitoring-traefik] [--no-frontend] [service...]  # Start services
+./deploy.sh down [mode] [--no-monitoring] [--nas] [--traefik] [--monitoring-traefik] [--no-frontend] [service...]              # Stop services
+./deploy.sh build [mode] [--no-monitoring] [--nas] [--traefik] [--no-frontend] [service...]             # Build images
+./deploy.sh deploy [mode] [--follow|-f] [--no-monitoring] [--nas] [--traefik] [--monitoring-traefik] [--no-frontend]  # Full pipeline: down + pull + build + up
+./deploy.sh pull [repo...]                        # Git pull repositories
+./deploy.sh force-pull [repo...]                  # Force reset repositories to origin
+./deploy.sh logs [mode] [--no-monitoring] [--nas] [--traefik] [--monitoring-traefik] [--no-frontend] [service]  # View logs
+./deploy.sh test [--log-file <path>] [--no-cleanup] [--no-log] [--quiet]  # Run tests
+./deploy.sh status                                  # Show status
+./deploy.sh clean                                   # Remove volumes and images
+./deploy.sh help                                    # Show help
 ```
 
 **Modes:**
-- `dev`      - Development (default, hot-reload)
-- `prod`     - Production (optimized standalone build)
-- `prod-nas` - Production (NAS volumes)
-- `test`     - Testing (no frontend)
+- `dev`      - Development (default, hot-reload, monitoring enabled)
+- `prod`     - Production (optimized standalone build, monitoring enabled)
+- `test`     - Testing (isolated DB/Redis, runs pytest, no frontend, no monitoring)
+
+**Flags:**
+- `--build` - Rebuild images before starting (up only)
+- `--no-monitoring` - Skip the monitoring stack
+- `--nas`           - Include NAS volume overrides (prod only)
+- `--traefik`       - Include Traefik overrides for frontend + Grafana (prod only)
+- `--monitoring-ports` - Publish monitoring ports to host (dev only)
+- `--monitoring-traefik` - Include Traefik routes for monitoring services (prod only)
+- `--no-frontend` - Exclude frontend service
 
 ### Frontend (npm)
 
@@ -78,8 +90,8 @@ Copy `.env.local.example` to `.env.local` for development:
 | `SESSION_SECRET` | _(required)_ | JWT signing key for session cookies (32+ chars) |
 | `APP_URL` | `http://localhost:3000` | Canonical public origin for absolute URLs and redirects |
 
-**Docker build args (defaults):**
-- `NEXT_PUBLIC_API_URL=/api/v1`
+**Docker ENV (set in development/production stages):**
+- `NEXT_PUBLIC_API_URL=/api/v1` (also accepted as a build arg in the builder stage)
 - `INTERNAL_API_URL=http://graveboards-backend:8000/api/v1` (internal Docker network)
 
 ---
