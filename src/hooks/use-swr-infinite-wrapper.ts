@@ -11,6 +11,9 @@ import {API_URL} from "@/lib/constants";
 
 type PlainObject = Record<string, unknown>;
 
+const DEFAULT_ERROR_RETRY_INTERVAL_MS = 3_000;
+const DEFAULT_ERROR_RETRY_COUNT = 5;
+
 const isPlainObject = (value: unknown): value is PlainObject => (
     typeof value === "object" && value !== null && !Array.isArray(value)
 );
@@ -84,7 +87,11 @@ export function makeSWRInfiniteWrapper(apiUrl: string, fetcher: <T>(url: string)
         const swr = useSWRInfinite<EndpointSpecification[K]["page"]>(
             getKey,
             (url: string) => fetcher<EndpointSpecification[K]["page"]>(url),
-            config
+            {
+                errorRetryInterval: DEFAULT_ERROR_RETRY_INTERVAL_MS,
+                errorRetryCount: DEFAULT_ERROR_RETRY_COUNT,
+                ...config,
+            }
         );
 
         const items = (swr.data ? swr.data.flat() : []) as EndpointSpecification[K]["page"][number][];

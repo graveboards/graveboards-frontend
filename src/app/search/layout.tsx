@@ -1,8 +1,9 @@
 import React, {Suspense} from 'react';
 import {Metadata} from "next";
-import SearchTopbar from "@/components/new/layout/search/search-topbar";
 import SearchScopeBar from "@/components/new/layout/search/search-scope-bar";
 import {SearchProvider} from "@/context/search/search-context";
+import Topbar from "@/components/new/layout/topbar/topbar";
+import PageContent from "@/components/new/layout/page-content";
 
 export const metadata: Metadata = {
     title: 'Search | Graveboards',
@@ -11,13 +12,13 @@ export const metadata: Metadata = {
 const Layout = async ({children}: { children: React.ReactNode }) => {
     return (
         <SearchProvider>
-            <SearchTopbar/>
+            <Topbar/>
             <Suspense fallback={null}>
                 <SearchScopeBar/>
             </Suspense>
-            <div className="px-5 pb-5">
+            <PageContent>
                 {children}
-            </div>
+            </PageContent>
         </SearchProvider>
     )
 };

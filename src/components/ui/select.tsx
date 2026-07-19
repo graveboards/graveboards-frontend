@@ -13,6 +13,8 @@ interface SelectProps<T> extends HTMLAttributes<HTMLDivElement> {
     placeholder?: string;
     disabled?: boolean;
     footer?: React.ReactNode;
+    triggerAriaLabelledBy?: string;
+    triggerAriaDescribedBy?: string;
 }
 
 const MAX_DROPDOWN_HEIGHT = 308;
@@ -30,6 +32,8 @@ const Select = <T, >({
                          className,
                          disabled,
                          footer,
+                         triggerAriaLabelledBy,
+                         triggerAriaDescribedBy,
                          ...props
                      }: SelectProps<T>) => {
     const [open, setOpen] = useState(false);
@@ -100,6 +104,8 @@ const Select = <T, >({
             {...props}
         >
             <button
+                aria-labelledby={triggerAriaLabelledBy}
+                aria-describedby={triggerAriaDescribedBy}
                 disabled={disabled}
                 type="button"
                 className={clsx(

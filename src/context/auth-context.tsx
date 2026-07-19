@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "@/types/user";
 import { fetchUser, logoutUser as logoutUser } from "@/actions/auth";
 import toast from "react-hot-toast";
+import {isAdminUser} from "@/lib/queue-permissions";
 
 interface AuthContextType {
     user: User | null;
@@ -28,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const isAuthenticated = !!user;
 
-    const isAdmin = false // !!user?.roles?.some((role: { id: number, name: string }) => role.id === 1 && role.name === "admin");
+    const isAdmin = isAdminUser(user);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -51,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             await logoutUser();
         } catch {
             toast.error("We couldn't sign you out. Please try again.");
+            return;
         }
 
         setUser(null);

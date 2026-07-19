@@ -4,6 +4,7 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import { MdEdit } from "react-icons/md";
 import { Queue } from "@/types/queue";
+import {canManageQueue} from "@/lib/queue-permissions";
 
 interface ManageQueueButtonProps {
     queue: Queue;
@@ -11,9 +12,9 @@ interface ManageQueueButtonProps {
 
 const ManageQueueButton: FC<ManageQueueButtonProps> = ({ queue }) => {
     const { user, isAdmin } = useAuth();
-    const isManager = user && (queue.manager_profiles.some(manager => manager.id === user.id) || user?.id === queue.user_id);
+    const canManage = canManageQueue(queue, user, isAdmin);
 
-    return (isManager || isAdmin) && (
+    return canManage && (
         <Link
             href={`/queues/${queue.id}/manage`}>
             <Button rounded="full" size="lg">

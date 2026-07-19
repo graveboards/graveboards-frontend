@@ -14,3 +14,10 @@ export interface Queue {
     user_profile: UserProfile;
     manager_profiles: UserProfile[];
 }
+
+export interface QueuePatch {
+    name?: string;
+    description?: string;
+    is_open?: boolean;
+    visibility?: QueueVisibility;
+}

@@ -2,17 +2,19 @@
 
 import React, {FC, useActionState, useEffect, useState} from "react";
 import {Request, RequestStatus} from "@/types/request";
-import {MdChevronRight, MdComment, MdPlayArrow, MdRadioButtonChecked} from "react-icons/md";
+import {MdCheck, MdChevronRight, MdClose, MdComment, MdPlayArrow, MdRadioButtonChecked} from "react-icons/md";
 import {ColorUtils} from "@/utils/color-utils";
 import RequestStatusBadge from "@/components/requests/request-status-badge";
 import SelectRequestStatus from "@/components/requests/manage/select-request-status";
 import clsx from "clsx";
 import {formatTime} from "@/utils/time-utils";
 import {Button} from "@/components/ui/button";
-import {usePreview} from "@/context/preview-context";
+import {useBeatmapPreview} from "@/context/preview-context";
 import {patchRequest} from "@/actions/requests";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import {GameMode} from "@/types/beatmapset";
+import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
 
 interface RequestCardProps {
     request: Request,
@@ -22,15 +24,17 @@ interface RequestCardProps {
 const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
     const [status, setStatus] = useState<RequestStatus>(request.status);
 
-    const {setSrc} = usePreview();
+    const {selectBeatmap} = useBeatmapPreview();
+    const previewBeatmap = request.beatmapset_snapshot?.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
+        ?? request.beatmapset_snapshot?.beatmap_snapshots[0];
 
     const [commentOpen, setCommentOpen] = useState(false);
 
     const formRef = React.useRef<HTMLFormElement>(null);
 
-    const [selectRequestStatusState, dispatchSelectRequestStatus, isSelectRequestStatusPending] = useActionState(async (prevState: {
+    const [requestStatusState, dispatchRequestStatus, isRequestStatusPending] = useActionState(async (prevState: {
         status: RequestStatus
-    }, {status}: { status: RequestStatus }) => {
+    }, {status}: {status: RequestStatus}) => {
         const result = await patchRequest(request.id, {status});
 
         if (result) {
@@ -43,19 +47,27 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
     }, {status: request.status});
 
     useEffect(() => {
-        if (status !== selectRequestStatusState.status) {
-            formRef?.current?.requestSubmit();
+        if (status !== requestStatusState.status) {
+            formRef.current?.requestSubmit();
         }
-    }, [status, selectRequestStatusState.status]);
+    }, [status, requestStatusState.status]);
 
     return (
         <div className="flex rounded-xl h-24">
             <div
-                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-center bg-no-repeat bg-size-[215%]"
+                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%]"
                 style={{backgroundImage: `url(${request.beatmapset_snapshot?.covers["cover"]})`}}>
                 <div className="flex gap-1.5">
                     <Button className="px-1.5 gap-1 h-6.5 font-semibold text-sm"
-                            onClick={() => setSrc(request.beatmapset_snapshot?.preview_url)}>
+                            onClick={() => {
+                                if (previewBeatmap && request.beatmapset_snapshot) {
+                                    selectBeatmap(createBeatmapPreviewSelection(
+                                        previewBeatmap,
+                                        request.beatmapset_snapshot,
+                                    ));
+                                }
+                            }}
+                            disabled={!previewBeatmap}>
                         <MdPlayArrow className="size-4 shrink-0"/>
                         PREVIEW
                     </Button>
@@ -68,7 +80,9 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
             <div
                 className={clsx(
                     `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-4 px-4 relative tracking-wide rounded-xl xl:rounded-l-none xl:rounded-r-xl`,
-                    "lg:grid-cols-[repeat(3,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] grid-cols-2"
+                    editMode
+                        ? "lg:grid-cols-[repeat(3,minmax(0,1fr))_1.5rem_minmax(0,1fr)_auto] sm:grid-cols-[repeat(2,minmax(0,1fr))_1.5rem_minmax(0,1fr)_auto] grid-cols-[minmax(0,1fr)_auto_auto]"
+                        : "lg:grid-cols-[repeat(3,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] grid-cols-2"
                 )}>
                 <div className="truncate">
                     <a href={`https://osu.ppy.sh/beatmapsets/${request.beatmapset_id}`}
@@ -164,18 +178,54 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
                 </div>
 
                 {editMode ? (
-                    <form ref={formRef} action={() => dispatchSelectRequestStatus({status})}>
-                        <div className="flex items-center justify-center">
-                            <SelectRequestStatus
-                                name="status"
-                                initialStatus={selectRequestStatusState.status}
-                                onSelect={(item) => setStatus(item)}
-                                isPending={isSelectRequestStatusPending}/>
-                        </div>
+                    <form
+                        ref={formRef}
+                        action={() => dispatchRequestStatus({status})}
+                        className="flex min-w-0 items-center justify-center"
+                    >
+                        <SelectRequestStatus
+                            key={requestStatusState.status}
+                            name="status"
+                            className="w-32"
+                            initialStatus={requestStatusState.status}
+                            onSelect={setStatus}
+                            isPending={isRequestStatusPending}
+                        />
                     </form>
                 ) : (
                     <div className="flex items-center justify-center">
-                        <RequestStatusBadge status={selectRequestStatusState.status}/>
+                        <RequestStatusBadge status={requestStatusState.status}/>
+                    </div>
+                )}
+
+                {editMode && (
+                    <div className="flex flex-col items-center justify-center gap-1 pr-4">
+                        <Button
+                            type="button"
+                            size="xs"
+                            rounded="md"
+                            disabled={isRequestStatusPending || requestStatusState.status === 1}
+                            onClick={() => setStatus(1)}
+                            aria-label="Accept request"
+                            title="Accept request"
+                            className="w-24 px-2 text-xs bg-request-accepted hover:bg-request-accepted active:bg-request-accepted hover:opacity-85 active:opacity-70 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <MdCheck className="size-4 shrink-0"/>
+                            ACCEPT
+                        </Button>
+                        <Button
+                            type="button"
+                            size="xs"
+                            rounded="md"
+                            disabled={isRequestStatusPending || requestStatusState.status === -1}
+                            onClick={() => setStatus(-1)}
+                            aria-label="Reject request"
+                            title="Reject request"
+                            className="w-24 px-2 text-xs bg-request-rejected hover:opacity-85 active:opacity-70 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            <MdClose className="size-4 shrink-0"/>
+                            REJECT
+                        </Button>
                     </div>
                 )}
             </div>

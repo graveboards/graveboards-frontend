@@ -8,12 +8,13 @@ import {ColorUtils} from "@/utils/color-utils";
 import {formatTime} from "@/utils/time-utils";
 import {Button} from "@/components/ui/button";
 import RequestStatusBadge from "@/components/requests/request-status-badge";
-import {usePreview} from "@/context/preview-context";
+import {useBeatmapPreview} from "@/context/preview-context";
 import Link from "next/link";
 import RulesetIcon from "@/components/new/icons/rulesets";
 import {GameMode} from "@/types/beatmapset";
 import {BeatmapSnapshot} from "@/types/beatmap";
 import {BeatmapSnapshots} from "@/components/new/beatmapsets/cards/beatmap-snapshots";
+import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
 
 interface RequestPanelProps {
     request: Request,
@@ -23,7 +24,9 @@ interface RequestPanelProps {
 const GridRequestCard: FC<RequestPanelProps> = ({request, showQueue = true}) => {
     const [hover, setHover] = useState(false);
 
-    const {setSrc} = usePreview();
+    const {selectBeatmap} = useBeatmapPreview();
+    const previewBeatmap = request.beatmapset_snapshot?.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
+        ?? request.beatmapset_snapshot?.beatmap_snapshots[0];
 
     const snapshotsByRuleset = useMemo(() => Object.entries(request.beatmapset_snapshot!.beatmap_snapshots.reduce((acc, snapshot) => {
         const ruleset = snapshot.mode;
@@ -38,10 +41,10 @@ const GridRequestCard: FC<RequestPanelProps> = ({request, showQueue = true}) => 
     }, {} as Record<GameMode, BeatmapSnapshot[]>)), [request.beatmapset_snapshot])
 
     return (
-        <div className="flex flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch min-w-72 h-70">
+        <div className="flex min-w-0 flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch h-70">
             <div
                 className={clsx(
-                    "relative flex flex-col items-end p-2.5 justify-end gap-3 grow shrink-0 basis-0 self-stretch transition-[filter] duration-300 ease-in-out bg-center bg-no-repeat bg-size-[215%] tracking-[0.25px]",
+                    "relative flex flex-col items-end p-2.5 justify-end gap-3 grow shrink-0 basis-0 self-stretch transition-[filter] duration-300 ease-in-out bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%] tracking-[0.25px]",
                     {"delay-300": hover}
                 )}
                 style={{backgroundImage: `url(${request.beatmapset_snapshot?.covers.cover})`}}>
@@ -51,8 +54,14 @@ const GridRequestCard: FC<RequestPanelProps> = ({request, showQueue = true}) => 
                         {"opacity-0": hover}
                     )}
                             onClick={() => {
-                                setSrc(request.beatmapset_snapshot?.preview_url);
-                            }}>
+                                if (previewBeatmap && request.beatmapset_snapshot) {
+                                    selectBeatmap(createBeatmapPreviewSelection(
+                                        previewBeatmap,
+                                        request.beatmapset_snapshot,
+                                    ));
+                                }
+                            }}
+                            disabled={!previewBeatmap}>
 
                         <MdPlayArrow className="size-4 shrink-0"/>
                         PREVIEW

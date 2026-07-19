@@ -3,7 +3,7 @@ import React from 'react';
 const GridBeatmapsetCardSkeleton = () => {
     return (
         <div
-            className="flex flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch min-w-72 h-64 bg-tertiary-50 dark:bg-tertiary-900">
+            className="flex min-w-0 flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch h-64 bg-tertiary-50 dark:bg-tertiary-900">
             <div className="animate-pulse w-full h-full">
                 <div className="flex h-39 bg-tertiary-200 dark:bg-tertiary-750"></div>
                 <div className="flex gap-3 p-2.5 self-stretch min-w-24 relative">

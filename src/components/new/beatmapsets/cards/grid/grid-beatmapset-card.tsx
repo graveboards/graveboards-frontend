@@ -2,13 +2,14 @@
 
 import {FC, useState} from "react";
 import clsx from "clsx";
-import {BeatmapsetSnapshot} from "@/types/beatmapset";
+import {BeatmapsetSnapshot, GameMode} from "@/types/beatmapset";
 import {MdPlayArrow} from "react-icons/md";
 import {formatTime} from "@/utils/time-utils";
 import {Button} from "@/components/ui/button";
-import {usePreview} from "@/context/preview-context";
+import {useBeatmapPreview} from "@/context/preview-context";
 import {cn} from "@/lib/utils";
 import {GridBeatmapsetCardDetails} from "@/components/new/beatmapsets/cards/grid/grid-beatmapset-card-details";
+import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
 
 interface GridBeatmapsetCardProps {
     beatmapset: BeatmapsetSnapshot,
@@ -17,17 +18,22 @@ interface GridBeatmapsetCardProps {
 const GridBeatmapsetCard: FC<GridBeatmapsetCardProps> = ({beatmapset}) => {
     const [hover, setHover] = useState(false);
 
-    const {setSrc} = usePreview();
+    const {selectBeatmap} = useBeatmapPreview();
+    const previewBeatmap = beatmapset.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
+        ?? beatmapset.beatmap_snapshots[0];
 
     return (
-        <div className="flex flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch min-w-72 h-64">
+        <div className="flex min-w-0 flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch h-64">
             <div
-                className={clsx("relative flex flex-col items-end p-2.5 justify-end gap-3 grow shrink-0 basis-0 self-stretch transition-[filter] duration-300 ease-in-out bg-center bg-no-repeat bg-size-[215%] tracking-[0.25px]", {"delay-300": hover})}
+                className={clsx("relative flex flex-col items-end p-2.5 justify-end gap-3 grow shrink-0 basis-0 self-stretch transition-[filter] duration-300 ease-in-out bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%] tracking-[0.25px]", {"delay-300": hover})}
                 style={{backgroundImage: `url(${beatmapset.covers["cover"]})`}}>
                 <div
                     className={cn("flex gap-1.5 transition-opacity duration-300 ease-in-out delay-300 z-10", hover && "opacity-0 delay-0")}>
                     <Button
-                        onClick={() => setSrc(beatmapset.preview_url)}
+                        onClick={() => previewBeatmap && selectBeatmap(
+                            createBeatmapPreviewSelection(previewBeatmap, beatmapset)
+                        )}
+                        disabled={!previewBeatmap}
                         className="px-1.5 gap-1 h-6.5 font-semibold text-sm box-border"
                     >
                         <MdPlayArrow className="size-4 shrink-0"/>

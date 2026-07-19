@@ -1,12 +1,25 @@
 "use server";
 
-import { Queue } from "@/types/queue";
+import {Queue, QueuePatch} from "@/types/queue";
 import { cache } from "react";
 import { verifySession } from "@/actions/session";
 import { revalidatePath } from "next/cache";
 import {SERVER_API_URL} from "@/lib/server-api-url";
 
 const API_URL = SERVER_API_URL;
+
+export type QueueResult =
+    | {ok: true; queue: Queue}
+    | {ok: false; status: number};
+
+export type QueuePatchResult =
+    | {ok: true}
+    | {ok: false; status: number};
+
+const QUEUE_INCLUDE_QUERY = new URLSearchParams({
+    "include[user_profile]": "true",
+    "include[manager_profiles]": "true",
+}).toString();
 
 export const getQueues = cache(async (params?: URLSearchParams) => {
     const session = await verifySession();
@@ -32,22 +45,30 @@ export const getQueues = cache(async (params?: URLSearchParams) => {
     return await response.json() as Queue[];
 });
 
-export const getQueue = async (id: number) => {
+export const getQueue = async (id: number): Promise<QueueResult> => {
     const session = await verifySession();
 
     if (!session) {
-        return;
+        return {ok: false, status: 401};
     }
 
-    const response = await fetch(`${API_URL}/queues/${id}`, {
+    const response = await fetch(`${API_URL}/queues/${id}?${QUEUE_INCLUDE_QUERY}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${session?.token}`
-        }
+        },
+        cache: "no-store",
     });
 
-    return await response.json() as Queue;
+    if (!response.ok) {
+        return {ok: false, status: response.status};
+    }
+
+    return {
+        ok: true,
+        queue: await response.json() as Queue,
+    };
 };
 
 export const postQueue = async (queue: Partial<Queue>) => {
@@ -73,16 +94,11 @@ export const postQueue = async (queue: Partial<Queue>) => {
     return q;
 };
 
-export const patchQueue = async (id: number, queue: {
-    name?: string;
-    description?: string;
-    is_open?: boolean;
-    visibility?: 0 | 1 | 2;
-}) => {
+export const patchQueue = async (id: number, queue: QueuePatch): Promise<QueuePatchResult> => {
     const session = await verifySession();
 
     if (!session) {
-        return;
+        return {ok: false, status: 401};
     }
 
     const response = await fetch(`${API_URL}/queues/${id}`, {
@@ -91,18 +107,15 @@ export const patchQueue = async (id: number, queue: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${session?.token}`
         },
-        body: JSON.stringify({
-            name: queue.name,
-            description: queue.description,
-            is_open: queue.is_open,
-            visibility: queue.visibility
-        })
+        body: JSON.stringify(queue)
     });
 
-    const q = await response.json() as Queue;
+    if (!response.ok) {
+        return {ok: false, status: response.status};
+    }
 
     revalidatePath("/queues");
-    revalidatePath(`/queues/${id}`);
+    revalidatePath(`/queues/${id}`, "layout");
 
-    return q;
+    return {ok: true};
 };

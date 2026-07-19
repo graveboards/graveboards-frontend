@@ -3,12 +3,13 @@ import "@/app/globals.css";
 import React, {Suspense} from "react";
 import Sidebar from "@/components/new/layout/sidebar/sidebar";
 import {AuthProvider} from "@/context/auth-context";
-import {PreviewProvider} from "@/context/preview-context";
+import {BeatmapPreviewProvider} from "@/context/preview-context";
 import PreviewPlayer from "@/components/new/preview/preview-player";
 import {Toaster} from "react-hot-toast";
 import {SidebarProvider} from "@/context/layout/sidebar-context";
 import {Nunito} from "next/font/google";
 import AuthToast from "@/components/new/layout/auth-toast";
+import {TimeProvider} from "@/context/time-context";
 
 export const metadata: Metadata = {
     title: "Graveboards",
@@ -29,17 +30,19 @@ const RootLayout = ({
         <AuthToast/>
     </Suspense>
     <AuthProvider>
-        <PreviewProvider>
-            <SidebarProvider>
-                <div className="flex">
-                    <Sidebar/>
-                    <div className="flex-1">
-                        {children}
+        <TimeProvider>
+            <BeatmapPreviewProvider>
+                <SidebarProvider>
+                    <div className="flex">
+                        <Sidebar/>
+                        <div className="min-w-0 flex-1">
+                            {children}
+                        </div>
                     </div>
-                </div>
-            </SidebarProvider>
-            <PreviewPlayer/>
-        </PreviewProvider>
+                </SidebarProvider>
+                <PreviewPlayer/>
+            </BeatmapPreviewProvider>
+        </TimeProvider>
     </AuthProvider>
     </body>
     </html>

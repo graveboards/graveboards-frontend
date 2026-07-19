@@ -5,18 +5,19 @@ import {MdChevronRight, MdPlayArrow} from "react-icons/md";
 import {formatTime} from "@/utils/time-utils";
 import clsx from "clsx";
 import {Button} from "@/components/ui/button";
-import {usePreview} from "@/context/preview-context";
+import {useBeatmapPreview} from "@/context/preview-context";
 import {BeatmapSnapshot} from "@/types/beatmap";
 import {BeatmapSnapshotLink} from "@/components/new/beatmapsets/cards/beatmap-snapshots";
 import {ColorUtils} from "@/utils/color-utils";
 import RulesetIcon from "@/components/new/icons/rulesets";
+import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
 
 interface ListBeatmapCardProps {
     beatmap: BeatmapSnapshot,
 }
 
 const ListBeatmapCard: FC<ListBeatmapCardProps> = ({beatmap}) => {
-    const {setSrc} = usePreview();
+    const {selectBeatmap} = useBeatmapPreview();
 
     return (
         <div
@@ -36,12 +37,15 @@ const ListBeatmapCard: FC<ListBeatmapCardProps> = ({beatmap}) => {
                     <RulesetIcon ruleset={beatmap.mode}/>
                 </div>
                 <div
-                    className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-center bg-no-repeat bg-size-[215%]"
+                    className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%]"
                     style={{backgroundImage: `url(${beatmap.beatmapset_snapshots[0].covers["cover"]})`}}>
                     <div className="flex gap-1.5">
                         <Button className="px-1.5 gap-1 h-6.5 font-semibold text-sm"
                                 onClick={() => {
-                                    setSrc(beatmap.beatmapset_snapshots[0].preview_url);
+                                    selectBeatmap(createBeatmapPreviewSelection(
+                                        beatmap,
+                                        beatmap.beatmapset_snapshots[0],
+                                    ));
                                 }}>
                             <MdPlayArrow className="size-4 shrink-0"/>
                             PREVIEW

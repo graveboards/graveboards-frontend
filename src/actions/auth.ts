@@ -3,7 +3,6 @@
 import {createSession, deleteSession, verifySession} from "@/actions/session";
 import {cache} from "react";
 import {User} from "@/types/user";
-import {redirect} from "next/navigation";
 import {JWTPayload} from "jose";
 import {SERVER_API_URL} from "@/lib/server-api-url";
 
@@ -73,7 +72,6 @@ export const verifyToken = async (token: string) => {
 
 export const logoutUser = async () => {
     await deleteSession();
-    redirect("/");
 }
 
 export const fetchUser = cache(async () => {
@@ -83,7 +81,7 @@ export const fetchUser = cache(async () => {
         return;
     }
 
-    const response = await fetch(`${API_URL}/users/${session.userId}?include[profile]=true&include[roles][id]=true`, {
+    const response = await fetch(`${API_URL}/users/${session.userId}?include[profile]=true&include[roles][id]=true&include[roles][name]=true`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -92,7 +90,7 @@ export const fetchUser = cache(async () => {
     });
 
     if (!response.ok) {
-        return;
+        throw new Error(`Failed to fetch current user: backend returned ${response.status}.`);
     }
 
     return await response.json() as User;

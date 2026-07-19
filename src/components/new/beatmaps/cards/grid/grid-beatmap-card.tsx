@@ -5,27 +5,31 @@ import clsx from "clsx";
 import {MdPlayArrow} from "react-icons/md";
 import {formatTime} from "@/utils/time-utils";
 import {Button} from "@/components/ui/button";
-import {usePreview} from "@/context/preview-context";
+import {useBeatmapPreview} from "@/context/preview-context";
 import {cn} from "@/lib/utils";
 import {BeatmapSnapshot} from "@/types/beatmap";
 import {GridBeatmapCardDetails} from "@/components/new/beatmaps/cards/grid/grid-beatmap-card-details";
+import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
 
 interface GridBeatmapCardProps {
     beatmap: BeatmapSnapshot,
 }
 
 const GridBeatmapCard: FC<GridBeatmapCardProps> = ({beatmap}) => {
-    const {setSrc} = usePreview();
+    const {selectBeatmap} = useBeatmapPreview();
 
     return (
-        <div className="flex flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch min-w-72 h-64">
+        <div className="flex min-w-0 flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch h-64">
             <div
-                className={clsx("relative flex flex-col items-end p-2.5 justify-end gap-3 grow shrink-0 basis-0 self-stretch transition-[filter] duration-300 ease-in-out bg-center bg-no-repeat bg-size-[215%] tracking-[0.25px]")}
+                className={clsx("relative flex flex-col items-end p-2.5 justify-end gap-3 grow shrink-0 basis-0 self-stretch transition-[filter] duration-300 ease-in-out bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%] tracking-[0.25px]")}
                 style={{backgroundImage: `url(${beatmap.beatmapset_snapshots[0].covers["cover"]})`}}>
                 <div
                     className={cn("flex gap-1.5 transition-opacity duration-300 ease-in-out delay-300 z-10")}>
                     <Button
-                        onClick={() => setSrc(beatmap.beatmapset_snapshots[0].preview_url)}
+                        onClick={() => selectBeatmap(createBeatmapPreviewSelection(
+                            beatmap,
+                            beatmap.beatmapset_snapshots[0],
+                        ))}
                         className="px-1.5 gap-1 h-6.5 font-semibold text-sm box-border"
                     >
                         <MdPlayArrow className="size-4 shrink-0"/>

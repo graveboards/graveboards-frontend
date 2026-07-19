@@ -1,13 +1,14 @@
 import React from 'react';
 import Topbar from "@/components/new/layout/topbar/topbar";
+import PageContent from "@/components/new/layout/page-content";
 
 const Layout = async ({children}: {children: React.ReactNode}) => {
     return (
         <>
             <Topbar />
-            <div className="px-5 pb-5">
+            <PageContent>
                 {children}
-            </div>
+            </PageContent>
         </>
     );
 };

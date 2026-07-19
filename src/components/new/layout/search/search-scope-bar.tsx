@@ -2,8 +2,8 @@
 
 import React from 'react';
 import {useRouter, useSearchParams} from "next/navigation";
-import clsx from "clsx";
 import {SearchQueryScope} from "@/types/search";
+import {PageTab, PageTabs} from "@/components/new/layout/page-tabs";
 
 const items: Record<SearchQueryScope, { label: string }> = {
     beatmapsets: {label: "Beatmapsets"},
@@ -21,7 +21,7 @@ const SearchScopeBar = () => {
 
     const isActive = (queryScope: SearchQueryScope) => scope === queryScope;
 
-    const handleScopeChange = async (scope: SearchQueryScope) => {
+    const handleScopeChange = (scope: SearchQueryScope) => {
         const params = new URLSearchParams();
         params.set("scope", scope);
         if (q) {
@@ -38,29 +38,21 @@ const SearchScopeBar = () => {
     }
 
     return (
-        <div
-            className="flex flex-1 border-b justify-center border-tertiary-200 dark:border-tertiary-800 items-center gap-6 sticky top-0 z-10 backdrop-blur-sm bg-white dark:bg-transparent dark:backdrop-brightness-[0.1]">
-            {Object.entries(items).map(([key, item], index) => (
-                <button
+        <PageTabs aria-label="Search scopes">
+            {Object.entries(items).map(([key, item]) => {
+                const itemScope = key as SearchQueryScope;
+
+                return (
+                <PageTab
+                    isActive={isActive(itemScope)}
+                    key={key}
                     onClick={() => handleScopeChange(key as SearchQueryScope)}
-                    key={index}
-                    className={clsx(
-                        `group relative h-8 transition-colors duration-300 ease-in-out cursor-pointer`,
-                        isActive(key as SearchQueryScope) ? 'text-primary-500 dark:hover:text-primary-400' : 'text-tertiary-400 hover:text-tertiary-500 dark:text-tertiary-600'
-                    )}
                 >
                     {item.label}
-                    <div
-                        className={clsx(
-                            "absolute inset-x-0 -bottom-0.75 h-1.25 rounded-full ",
-                            "transform-gpu origin-center scale-x-0 transition-transform,colors duration-300 ease-in-out",
-                            "group-hover:scale-x-100",
-                            isActive(key as SearchQueryScope) ? "scale-x-100 bg-primary-500" : "bg-tertiary-700"
-                        )}
-                    />
-                </button>
-            ))}
-        </div>
+                </PageTab>
+                );
+            })}
+        </PageTabs>
     );
 };
 
