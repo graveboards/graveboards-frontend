@@ -7,9 +7,9 @@ import RequestButton from "@/components/new/layout/topbar/request-button";
 const Topbar = () => {
     return (
         <div
-            className="flex flex-1 items-center gap-4 sm:px-5 sm:py-9 p-5 sticky top-0 z-20 backdrop-blur-sm bg-white dark:bg-transparent dark:backdrop-brightness-[0.1]">
+            className="sticky top-0 z-20 flex min-w-0 flex-1 items-center gap-4 bg-white p-5 backdrop-blur-sm sm:px-5 sm:pb-5 sm:pt-9 dark:bg-transparent dark:backdrop-brightness-[0.1]">
             <TopbarToggle/>
-            <div className="flex flex-1 gap-4 justify-end items-center transition-all duration-300">
+            <div className="flex min-w-0 flex-1 gap-4 justify-end items-center transition-all duration-300">
                 <Suspense fallback={null}>
                     <SearchBar/>
                 </Suspense>

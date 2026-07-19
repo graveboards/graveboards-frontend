@@ -1,23 +1,24 @@
 "use client";
 
-import {startTransition, useActionState, useState} from "react";
+import {startTransition, useActionState, useEffect, useState} from "react";
 import {FaCircleNotch} from "react-icons/fa6";
 import {MdPerson} from "react-icons/md";
 import {startOAuth} from "@/actions/auth";
-import {usePathname, useRouter} from "next/navigation";
+import {usePathname} from "next/navigation";
 import {useAuth} from "@/context/auth-context";
 
 const LoginButton = () => {
     const currentPath = usePathname();
-    const {replace} = useRouter();
     const isCallback = currentPath === "/callback";
 
     const [state, action] = useActionState(startOAuth, null);
     const [disabled, setDisabled] = useState(false);
 
-    if (state?.authorization_url) {
-        replace(state.authorization_url);
-    }
+    useEffect(() => {
+        if (state?.authorization_url) {
+            window.location.assign(state.authorization_url);
+        }
+    }, [state?.authorization_url]);
 
     const {isLoading} = useAuth();
 

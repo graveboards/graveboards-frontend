@@ -102,7 +102,7 @@ export function PaginatedResourceList<K extends EndpointKey>({
 
             <div id="scrollable-div">
                 <div
-                    className={cn("gap-4 overflow-visible", layout === Layout.Grid ? "grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]" : "flex flex-col", classNames?.list)}
+                    className={cn("gap-4 overflow-visible", layout === Layout.Grid ? "grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]" : "flex flex-col", classNames?.list)}
                 >
                     {isLoading ? (
                         loader(layout)

@@ -89,7 +89,7 @@ export function InfiniteResourceList<K extends EndpointKey>({
             return;
         }
 
-        if (isEmpty || isReachingEnd || isValidating) {
+        if (error || isEmpty || isReachingEnd || isValidating) {
             return;
         }
 
@@ -103,7 +103,7 @@ export function InfiniteResourceList<K extends EndpointKey>({
         }, 0);
 
         return () => clearTimeout(timeout);
-    }, [isEmpty, isReachingEnd, isValidating, items.length, setSize, size]);
+    }, [error, isEmpty, isReachingEnd, isValidating, items.length, setSize, size]);
 
     if (error) {
         console.error("InfiniteResourceList error:", error);
@@ -139,11 +139,11 @@ export function InfiniteResourceList<K extends EndpointKey>({
 
             <InfiniteScroll
                 next={() => setSize(size + 1)}
-                hasMore={!isReachingEnd}
+                hasMore={!error && !isReachingEnd}
                 loader={loader(layout)}
                 dataLength={items.length}
                 style={{overflow: "visible"}}
-                className={cn("gap-4 overflow-visible", layout === Layout.Grid ? "grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]" : "flex flex-col", classNames?.list)}
+                className={cn("gap-4 overflow-visible", layout === Layout.Grid ? "grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(18rem,1fr))]" : "flex flex-col", classNames?.list)}
                 scrollThreshold={0.9}
             >
                 {items.map((item, idx) => (
