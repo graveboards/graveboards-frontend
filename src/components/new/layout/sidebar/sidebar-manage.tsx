@@ -18,7 +18,7 @@ const SidebarManage = () => {
         revalidateOnFocus: false
     });
 
-    if (!isAuthenticated || isLoading || error) {
+    if (!isAuthenticated || isLoading || error || !queues?.length) {
         return null;
     }
 

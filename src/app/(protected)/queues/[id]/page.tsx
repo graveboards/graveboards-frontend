@@ -1,5 +1,7 @@
 import React, {FC} from "react";
+import {notFound} from "next/navigation";
 import {QueueContent} from "@/components/new/queues/queue-content";
+import {getQueueRouteAccess} from "@/lib/queue-route-access";
 
 interface QueuePageProps {
     params: Promise<{ id: string }>;
@@ -8,11 +10,13 @@ interface QueuePageProps {
 const QueuePage: FC<QueuePageProps> = async ({params}) => {
     const id = Number((await params).id);
 
-    if (isNaN(id)) {
-        return <div>Invalid queue ID</div>;
+    if (!Number.isInteger(id) || id < 0) {
+        notFound();
     }
 
-    return <QueueContent id={id}/>;
+    const {queue} = await getQueueRouteAccess(id);
+
+    return <QueueContent queue={queue}/>;
 };
 
 export default QueuePage;

@@ -1,28 +1,30 @@
 "use client";
 
-import React, { FC } from "react";
-import { Queue } from "@/types/queue";
-import { MdChevronRight, MdEdit } from "react-icons/md";
-import { useAuth } from "@/context/auth-context";
+import React, {FC} from "react";
+import {Queue} from "@/types/queue";
+import {MdChevronRight, MdEdit} from "react-icons/md";
+import {useAuth} from "@/context/auth-context";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import QueueStatus from "@/components/new/queues/status/queue-status";
+import {canManageQueue} from "@/lib/queue-permissions";
+import {CompactQueueDescription} from "@/components/new/queues/description/queue-description-markdown";
 
 interface QueuePanelProps {
     queue: Queue;
 }
 
-const QueueCard: FC<QueuePanelProps> = ({ queue }) => {
-    const { user, isAdmin } = useAuth();
-    const isManager = user && (queue.manager_profiles?.some(manager => manager.id === user.id) || user?.id === queue.user_id);
+const QueueCard: FC<QueuePanelProps> = ({queue}) => {
+    const {user, isAdmin} = useAuth();
+    const canManage = canManageQueue(queue, user, isAdmin);
 
     return (
-        <div className="flex rounded-xl overflow-hidden">
+        <div className="relative flex rounded-xl">
             <div
-                className="z-10 px-8 py-6 flex-col gap-8 lg:flex-row w-full flex justify-between items-center rounded-xl bg-tertiary-50 dark:text-white dark:bg-tertiary-900 self-stretch">
+                className="relative z-10 px-8 py-6 flex-col gap-8 lg:flex-row w-full flex justify-between items-center rounded-xl bg-tertiary-50 dark:text-white dark:bg-tertiary-900 self-stretch">
                 <div className="flex items-center gap-6 w-full">
                     <div className="hidden lg:block size-24 rounded-xl shrink-0 bg-cover bg-tertiary-800"
-                         style={{ backgroundImage: `url(${queue.user_profile?.avatar_url})` }}></div>
+                         style={{backgroundImage: `url(${queue.user_profile?.avatar_url})`}}></div>
                     <div className="flex flex-col gap-1.5 w-full text-left">
                         <div>
                             <div className="font-semibold line-clamp-1 text-ellipsis">{queue.name}</div>
@@ -37,7 +39,7 @@ const QueueCard: FC<QueuePanelProps> = ({ queue }) => {
                                             {
                                                 queue.manager_profiles?.map((manager, index) => (
                                                     <span key={index}>
-                                                    <a href={`https://osu.ppy.sh/users/${manager.id}`}
+                                                    <a href={`https://osu.ppy.sh/users/${manager.user_id}`}
                                                        className="font-semibold" target="_blank">{manager.username}</a>
                                                         {index < queue.manager_profiles?.length - 1 && ", "}
                                                 </span>
@@ -48,16 +50,17 @@ const QueueCard: FC<QueuePanelProps> = ({ queue }) => {
                                 }
                             </div>
                         </div>
-                        <div
-                            className="text-sm text-tertiary-500 line-clamp-1 sm:line-clamp-2 text-ellipsis">{queue.description}</div>
+                        {queue.description?.trim() && (
+                            <CompactQueueDescription description={queue.description}/>
+                        )}
                     </div>
                     <div className="flex items-center justify-self-end gap-8">
-                        <QueueStatus isOpen={queue.is_open} />
+                        <QueueStatus isOpen={queue.is_open}/>
 
-                        {(isManager || isAdmin) && (
+                        {canManage && (
                             <Link href={`/queues/${queue.id}/manage`}>
                                 <Button rounded="full" size="lg">
-                                    <MdEdit className="size-6" />
+                                    <MdEdit className="size-6"/>
                                     <p className="lg:block hidden">Manage Queue</p>
                                 </Button>
                             </Link>
@@ -66,8 +69,8 @@ const QueueCard: FC<QueuePanelProps> = ({ queue }) => {
                 </div>
             </div>
             <Link href={`/queues/${queue.id}`}
-                  className={`flex items-center justify-center bg-tertiary-100 hover:bg-tertiary-200 active:bg-tertiary-300 dark:bg-tertiary-800 dark:hover:bg-tertiary-700 dark:active:bg-tertiary-600 pl-8 -ml-8 hover:w-20 w-14 transition-all duration-150 ease-in-out`}>
-                <MdChevronRight className="size-6 shrink-0 text-tertiary-500 justify-self-end" />
+                  className={`flex items-center justify-center bg-tertiary-100 hover:bg-tertiary-200 active:bg-tertiary-300 dark:bg-tertiary-800 dark:hover:bg-tertiary-700 dark:active:bg-tertiary-600 pl-8 -ml-8 hover:w-20 w-14 rounded-r-2xl transition-all duration-150 ease-in-out`}>
+                <MdChevronRight className="size-6 shrink-0 text-tertiary-500 justify-self-end"/>
             </Link>
         </div>
 

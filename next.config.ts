@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     output: "standalone",
     skipTrailingSlashRedirect: true,
+    experimental: {
+        authInterrupts: true,
+    },
     images: {
         remotePatterns: [
             {
