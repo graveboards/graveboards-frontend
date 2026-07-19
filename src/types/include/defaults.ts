@@ -15,15 +15,35 @@ export const DefaultBeatmapsetInclude = {} satisfies BeatmapsetInclude;
 export const DefaultBeatmapInclude = {} satisfies BeatmapInclude;
 
 export const DefaultBeatmapsetSnapshotInclude = {
-    beatmap_snapshots: true,
-    user_profile: true,
+    beatmapset_id: true,
+    snapshot_number: true,
     preview_url: true,
+    title: true,
+    artist: true,
+    covers: true,
+    creator: true,
+    user_id: true,
+    beatmap_snapshots: {
+        beatmap_id: true,
+        snapshot_number: true,
+        mode: true,
+        version: true,
+        difficulty_rating: true,
+    },
+    user_profile: {
+        user_id: true,
+        username: true,
+        avatar_url: true,
+    },
 } satisfies BeatmapsetSnapshotInclude;
 
 export const DefaultBeatmapSnapshotInclude = {} satisfies BeatmapSnapshotInclude;
 
 export const DefaultBeatmapListingsInclude = {
+    beatmap_id: true,
+    snapshot_number: true,
     difficulty_rating: true,
+    mode: true,
     bpm: true,
     ar: true,
     cs: true,
@@ -33,9 +53,19 @@ export const DefaultBeatmapListingsInclude = {
     url: true,
     version: true,
     beatmapset_snapshots: {
+        beatmapset_id: true,
+        snapshot_number: true,
+        preview_url: true,
         artist: true,
         title: true,
-        user_profile: true,
+        covers: true,
+        creator: true,
+        user_id: true,
+        user_profile: {
+            user_id: true,
+            username: true,
+            avatar_url: true,
+        },
     },
     owner_profiles: true,
 } satisfies BeatmapSnapshotInclude;
@@ -47,9 +77,26 @@ export const DefaultQueueInclude = {
 
 export const DefaultRequestInclude = {
     beatmapset_snapshot: {
-        beatmap_snapshots: true,
-        user_profile: true,
+        beatmapset_id: true,
+        snapshot_number: true,
         preview_url: true,
+        title: true,
+        artist: true,
+        covers: true,
+        creator: true,
+        user_id: true,
+        beatmap_snapshots: {
+            beatmap_id: true,
+            snapshot_number: true,
+            mode: true,
+            version: true,
+            difficulty_rating: true,
+        },
+        user_profile: {
+            user_id: true,
+            username: true,
+            avatar_url: true,
+        },
     },
     user_profile: true,
     queue: true,

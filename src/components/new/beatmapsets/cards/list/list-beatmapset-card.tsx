@@ -7,9 +7,10 @@ import {ColorUtils} from "@/utils/color-utils";
 import {formatTime} from "@/utils/time-utils";
 import clsx from "clsx";
 import {Button} from "@/components/ui/button";
-import {usePreview} from "@/context/preview-context";
+import {useBeatmapPreview} from "@/context/preview-context";
 import {BeatmapSnapshot} from "@/types/beatmap";
 import RulesetIcon from "@/components/new/icons/rulesets";
+import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
 
 interface BeatmapsetProps {
     beatmapset: BeatmapsetSnapshot,
@@ -17,7 +18,9 @@ interface BeatmapsetProps {
 }
 
 const ListBeatmapsetCard: FC<BeatmapsetProps> = ({beatmapset}) => {
-    const {setSrc} = usePreview();
+    const {selectBeatmap} = useBeatmapPreview();
+    const previewBeatmap = beatmapset.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
+        ?? beatmapset.beatmap_snapshots[0];
 
     const snapshotsByRuleset = useMemo(() => Object.entries(beatmapset.beatmap_snapshots.reduce((acc, snapshot) => {
         const ruleset = snapshot.mode;
@@ -34,13 +37,16 @@ const ListBeatmapsetCard: FC<BeatmapsetProps> = ({beatmapset}) => {
     return (
         <div className="flex rounded-xl overflow-hidden h-24">
             <div
-                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-center bg-no-repeat bg-size-[215%]"
+                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%]"
                 style={{backgroundImage: `url(${beatmapset.covers["cover"]})`}}>
                 <div className="flex gap-1.5">
                     <Button className="px-1.5 gap-1 h-6.5 font-semibold text-sm"
                             onClick={() => {
-                                setSrc(beatmapset.preview_url);
-                            }}>
+                                if (previewBeatmap) {
+                                    selectBeatmap(createBeatmapPreviewSelection(previewBeatmap, beatmapset));
+                                }
+                            }}
+                            disabled={!previewBeatmap}>
                         <MdPlayArrow className="size-4 shrink-0"/>
                         PREVIEW
                     </Button>

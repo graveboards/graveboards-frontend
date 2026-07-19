@@ -6,13 +6,20 @@ import Select from "@/components/ui/select";
 
 interface SelectRequestStatusProps {
     initialStatus: RequestStatus;
+    className?: string;
     disabled?: boolean;
     isPending?: boolean;
     name?: string;
     onSelect?: (status: RequestStatus) => void;
 }
 
-const SelectRequestStatus: FC<SelectRequestStatusProps> = ({initialStatus, disabled, isPending, onSelect}) => {
+const SelectRequestStatus: FC<SelectRequestStatusProps> = ({
+                                                               initialStatus,
+                                                               className = "w-full sm:w-auto",
+                                                               disabled,
+                                                               isPending,
+                                                               onSelect,
+                                                           }) => {
     const [status, setStatus] = useState<RequestStatus>(initialStatus);
 
     const handleSelect = (newStatus: RequestStatus) => {
@@ -38,7 +45,7 @@ const SelectRequestStatus: FC<SelectRequestStatusProps> = ({initialStatus, disab
                 onItemSelect={(item) => handleSelect(item || RequestStatuses.Pending)}
                 selected={Object.values(RequestStatuses).find((s) => s === status)}
                 isSelected={(item) => item === status}
-                className={"w-full sm:w-auto"}
+                className={className}
                 disabled={disabled || isPending}
             />
         </>
