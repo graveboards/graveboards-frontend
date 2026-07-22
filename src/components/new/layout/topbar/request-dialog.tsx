@@ -12,6 +12,7 @@ import {createPortal} from "react-dom";
 import Dialog from "@/components/shared/dialog";
 import QueuesSelect from "@/components/new/queues/queues-select";
 import {Button} from "@/components/ui/button";
+import {Switch} from "@/components/ui/switch";
 import toast from "react-hot-toast";
 import {useAuth} from "@/context/auth-context";
 import {FaCircleNotch} from "react-icons/fa6";
@@ -64,6 +65,7 @@ const RequestDialog = forwardRef<HTMLDialogElement, RequestDialogProps>(
         const [beatmapLink, setBeatmapLink] = useState<string>("");
         const [queues, setQueues] = useState<number[]>([]);
         const [comment, setComment] = useState<string>("");
+        const [rulesAccepted, setRulesAccepted] = useState(false);
 
         const getBeatmapsetId = (link: string): number => {
             const match = link.match(/https:\/\/osu.ppy.sh\/beatmapsets\/(\d+)/);
@@ -71,7 +73,10 @@ const RequestDialog = forwardRef<HTMLDialogElement, RequestDialogProps>(
         };
 
         const handleQueuesChange = useCallback((queues: number[]) => {
-            if (queues.length < 3) setQueues(queues);
+            if (queues.length < 3) {
+                setQueues(queues);
+                setRulesAccepted(false);
+            }
         }, []);
 
         const handleSubmit = async (e: React.FormEvent) => {
@@ -105,6 +110,7 @@ const RequestDialog = forwardRef<HTMLDialogElement, RequestDialogProps>(
                 setBeatmapLink("");
                 setQueues([]);
                 setComment("");
+                setRulesAccepted(false);
 
                 onClose();
             } else if (state.success === false) {
@@ -157,12 +163,24 @@ const RequestDialog = forwardRef<HTMLDialogElement, RequestDialogProps>(
                                 onChange={(e) => setComment(e.target.value)}
                             />
                         </div>
+                        <div className="flex items-center gap-2 text-sm text-tertiary-400 dark:text-tertiary-500">
+                            <Switch
+                                id="queue-rules-accepted"
+                                required
+                                checked={rulesAccepted}
+                                onCheckedChange={setRulesAccepted}
+                            />
+                            <label htmlFor="queue-rules-accepted" className="cursor-pointer">
+                                I have read and agree to the rules of the selected queue(s).
+                                <span className="text-red-500">*</span>
+                            </label>
+                        </div>
                         <footer className="flex justify-end gap-2 mt-2">
                             <Button
                                 rounded="lg"
                                 className="px-4 py-2"
                                 type="submit"
-                                disabled={!beatmapLink || !queues.length || isPending}
+                                disabled={!beatmapLink || !queues.length || !rulesAccepted || isPending}
                             >
                                 {isPending ? (
                                     <>

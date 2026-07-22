@@ -22,10 +22,10 @@ const QueueCard: FC<QueuePanelProps> = ({queue}) => {
         <div className="relative flex rounded-xl">
             <div
                 className="relative z-10 px-8 py-6 flex-col gap-8 lg:flex-row w-full flex justify-between items-center rounded-xl bg-tertiary-50 dark:text-white dark:bg-tertiary-900 self-stretch">
-                <div className="flex items-center gap-6 w-full">
+                <div className="flex w-full min-w-0 flex-col items-stretch gap-4 sm:flex-row sm:items-center sm:gap-6">
                     <div className="hidden lg:block size-24 rounded-xl shrink-0 bg-cover bg-tertiary-800"
                          style={{backgroundImage: `url(${queue.user_profile?.avatar_url})`}}></div>
-                    <div className="flex flex-col gap-1.5 w-full text-left">
+                    <div className="flex min-w-0 flex-1 flex-col gap-1.5 text-left">
                         <div>
                             <div className="font-semibold line-clamp-1 text-ellipsis">{queue.name}</div>
                             <div className="text-sm text-tertiary-500 line-clamp-1 text-ellipsis">Owned by <a
@@ -54,7 +54,7 @@ const QueueCard: FC<QueuePanelProps> = ({queue}) => {
                             <CompactQueueDescription description={queue.description}/>
                         )}
                     </div>
-                    <div className="flex items-center justify-self-end gap-8">
+                    <div className="flex w-full shrink-0 items-center justify-between gap-4 sm:w-auto sm:justify-self-end sm:gap-8">
                         <QueueStatus isOpen={queue.is_open}/>
 
                         {canManage && (

@@ -145,7 +145,7 @@ const Select = <T, >({
             {open && (
                 <div
                     className={cn(
-                        "absolute left-0 overflow-y-auto flex flex-col z-50 bg-tertiary-100 dark:bg-tertiary-900 sm:border border-tertiary-400 dark:border-tertiary-700 border min-w-full max-h-77 snap-y",
+                        "absolute left-0 w-[calc(100%+2px)] overflow-y-auto flex flex-col z-50 bg-tertiary-100 dark:bg-tertiary-900 sm:w-max sm:border border-tertiary-400 dark:border-tertiary-700 border min-w-full max-h-77 snap-y",
                         dropdownDirection === "up"
                             ? "bottom-full border-b-0 rounded-t-lg sm:mb-2 sm:border-b sm:rounded-lg"
                             : "top-full border-t-0 rounded-b-lg sm:mt-2 sm:border-t sm:rounded-lg"

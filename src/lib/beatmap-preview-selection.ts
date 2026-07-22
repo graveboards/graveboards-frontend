@@ -10,6 +10,21 @@ const createDifficulty = (beatmap: BeatmapSnapshot): BeatmapPreviewDifficulty =>
     difficultyRating: beatmap.difficulty_rating,
 });
 
+export const getDefaultBeatmapPreview = (
+    beatmapset: BeatmapsetSnapshot,
+): BeatmapSnapshot | undefined => {
+    const standardDifficulties = beatmapset.beatmap_snapshots.filter(
+        (beatmap) => beatmap.mode === GameMode.Osu,
+    );
+    const candidates = standardDifficulties.length > 0
+        ? standardDifficulties
+        : beatmapset.beatmap_snapshots;
+
+    return candidates.reduce<BeatmapSnapshot | undefined>((hardest, beatmap) => (
+        !hardest || beatmap.difficulty_rating > hardest.difficulty_rating ? beatmap : hardest
+    ), undefined);
+};
+
 export const createBeatmapPreviewSelection = (
     beatmap: BeatmapSnapshot,
     beatmapset: BeatmapsetSnapshot,

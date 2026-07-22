@@ -514,12 +514,22 @@ const PreviewPlayer = () => {
                         </div>
                     </div>
 
-                    <PreviewPlayerDifficultySelect
-                        difficulties={selectableDifficulties}
-                        selected={selectedDifficulty}
-                        disabled={difficultiesLoading || selectableDifficulties.length < 2}
-                        onSelect={selectDifficulty}
-                    />
+                    <div className="flex shrink-0 items-center gap-1">
+                        <PreviewPlayerDifficultySelect
+                            difficulties={selectableDifficulties}
+                            selected={selectedDifficulty}
+                            disabled={difficultiesLoading || selectableDifficulties.length < 2}
+                            onSelect={selectDifficulty}
+                        />
+                        <button
+                            type="button"
+                            aria-label="Close preview"
+                            onClick={clearBeatmap}
+                            className="shrink-0 rounded-full p-1 hover:bg-white/15"
+                        >
+                            <MdClose className="size-6"/>
+                        </button>
+                    </div>
                 </div>
 
                 {gameplayStatus === "ready" && gameplayNotice && (
@@ -544,7 +554,7 @@ const PreviewPlayer = () => {
                 </div>
             )}
 
-            <div className="flex flex-wrap min-w-0 items-center gap-3 p-4 sm:flex-nowrap sm:gap-4">
+            <div className="flex flex-wrap min-w-0 items-center gap-3 p-4 pr-6 sm:flex-nowrap sm:gap-4">
                 <PreviewPlayerControls
                     disabled={controlsDisabled}
                     startTime={timelineStart}
@@ -554,14 +564,6 @@ const PreviewPlayer = () => {
                     onPause={pauseTimeline}
                 />
                 <PreviewPlayerVolume disabled={Boolean(audioError)}/>
-                <button
-                    type="button"
-                    aria-label="Close preview"
-                    onClick={clearBeatmap}
-                    className="shrink-0 rounded-full p-1 hover:bg-tertiary-200 dark:hover:bg-tertiary-800"
-                >
-                    <MdClose className="size-6"/>
-                </button>
             </div>
         </aside>
     );
