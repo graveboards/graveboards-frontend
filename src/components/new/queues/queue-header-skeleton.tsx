@@ -3,7 +3,7 @@ import React from 'react';
 const QueuePanelSkeleton = () => {
     return (
         <div
-            className="px-8 py-6 gap-8 flex items-center rounded-xl self-stretch">
+            className="px-4 py-6 sm:px-8 gap-8 flex items-center rounded-xl self-stretch">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6 flex-1 overflow-hidden animate-pulse">
                 <div
                     className="size-24 bg-tertiary-100 dark:bg-tertiary-750 rounded-xl shrink-0"></div>

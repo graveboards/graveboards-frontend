@@ -15,7 +15,7 @@ const QueueHeader: FC<QueueHeaderProps> = ({ queue }) => {
 
     return (
         <div
-            className="px-8 py-6 flex-col gap-8 lg:flex-row flex justify-between items-center rounded-xl dark:text-white self-stretch transition-colors duration-300 ease-in-out">
+            className="px-4 py-6 sm:px-8 flex-col gap-8 lg:flex-row flex justify-between items-center rounded-xl dark:text-white self-stretch transition-colors duration-300 ease-in-out">
             <div className="flex w-full flex-1 flex-col items-center gap-6 lg:flex-row lg:items-start">
                 <div className="flex w-full flex-1 flex-col items-center gap-6 sm:flex-row sm:items-start">
                     <div className="size-24 rounded-xl shrink-0 bg-cover"
