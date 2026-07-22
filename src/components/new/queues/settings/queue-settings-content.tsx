@@ -9,13 +9,19 @@ import React, {
     useState,
 } from "react";
 import {FaCircleNotch} from "react-icons/fa6";
-import {MdCheck, MdErrorOutline} from "react-icons/md";
+import {MdCheck, MdErrorOutline, MdSave} from "react-icons/md";
 import type {Queue, QueuePatch, QueueVisibility} from "@/types/queue";
 import {cn} from "@/lib/utils";
 import {useQueuePatch, type QueuePatchStatus} from "@/hooks/use-queue-patch";
 import SelectQueueVisibility from "@/components/new/queues/visibility/select-queue-visibility";
 import {Switch} from "@/components/ui/switch";
+import {Button} from "@/components/ui/button";
 import {QueueDescriptionMarkdown} from "@/components/new/queues/description/queue-description-markdown";
+import {
+    createMarkdownEdit,
+    MarkdownEditorToolbar,
+    type MarkdownEditorAction,
+} from "@/components/new/queues/settings/markdown-editor-toolbar";
 
 const AUTOSAVE_DELAY_MS = 1000;
 const preserveText = (value: string) => value;
@@ -26,11 +32,11 @@ interface QueueSettingsContentProps {
 }
 
 export const QueueSettingsContent = ({queue}: QueueSettingsContentProps) => (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 pt-6">
         <header className="flex flex-col gap-1">
             <h1 className="text-2xl font-semibold">Queue settings</h1>
             <p className="text-sm text-tertiary-500">
-                Changes are saved automatically.
+                Most changes are saved automatically. Description changes must be saved manually.
             </p>
         </header>
 
@@ -111,6 +117,7 @@ interface AutosavedTextSettingOptions {
     createPatch: (value: string) => QueuePatch;
     normalize?: (value: string) => string;
     validate?: (value: string) => string | null;
+    autosave?: boolean;
     errorMessage: string;
 }
 
@@ -120,6 +127,7 @@ const useAutosavedTextSetting = ({
     createPatch,
     normalize = preserveText,
     validate = acceptText,
+    autosave = true,
     errorMessage,
 }: AutosavedTextSettingOptions) => {
     const [value, setValue] = useState(initialValue);
@@ -171,6 +179,10 @@ const useAutosavedTextSetting = ({
                 savedValueRef.current = normalizedValue;
                 setSavedValue(normalizedValue);
 
+                if (!autosave && revisionRef.current !== submittedRevision) {
+                    return;
+                }
+
                 if (revisionRef.current === submittedRevision) {
                     if (valueRef.current !== normalizedValue) {
                         valueRef.current = normalizedValue;
@@ -183,7 +195,7 @@ const useAutosavedTextSetting = ({
         });
 
         return saveChainRef.current;
-    }, [clearTimer, createPatch, normalize, submit, validate]);
+    }, [autosave, clearTimer, createPatch, normalize, submit, validate]);
 
     const scheduleSave = useCallback((nextValue: string) => {
         valueRef.current = nextValue;
@@ -196,12 +208,12 @@ const useAutosavedTextSetting = ({
         const nextValidationError = validate(normalizedValue);
         setValidationError(nextValidationError);
 
-        if (!nextValidationError && normalizedValue !== savedValueRef.current) {
+        if (autosave && !nextValidationError && normalizedValue !== savedValueRef.current) {
             timerRef.current = setTimeout(() => {
                 void saveLatest();
             }, AUTOSAVE_DELAY_MS);
         }
-    }, [clearTimer, normalize, resetStatus, saveLatest, validate]);
+    }, [autosave, clearTimer, normalize, resetStatus, saveLatest, validate]);
 
     useEffect(() => {
         const normalizedInitialValue = normalize(initialValue);
@@ -214,10 +226,9 @@ const useAutosavedTextSetting = ({
             valueRef.current = initialValue;
             setValue(initialValue);
             setValidationError(null);
-            resetStatus();
             clearTimer();
         }
-    }, [clearTimer, initialValue, normalize, resetStatus]);
+    }, [clearTimer, initialValue, normalize]);
 
     useEffect(() => clearTimer, [clearTimer]);
 
@@ -234,6 +245,8 @@ const useAutosavedTextSetting = ({
         value,
         setValue: scheduleSave,
         saveLatest,
+        dirty,
+        isPending,
         status: visibleStatus,
         errorMessage: validationError ?? patchError,
     };
@@ -252,6 +265,7 @@ const QueueNameSetting = ({queue}: {queue: Queue}) => {
         createPatch,
         normalize,
         validate,
+        autosave: false,
         errorMessage: "Failed to update queue name.",
     });
 
@@ -287,11 +301,13 @@ const QueueNameSetting = ({queue}: {queue: Queue}) => {
 
 const QueueDescriptionSetting = ({queue}: {queue: Queue}) => {
     const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const createPatch = useCallback((description: string): QueuePatch => ({description}), []);
     const description = useAutosavedTextSetting({
         queueId: queue.id,
         initialValue: queue.description ?? "",
         createPatch,
+        autosave: false,
         errorMessage: "Failed to update queue description.",
     });
     const selectTab = (tab: "write" | "preview") => {
@@ -300,6 +316,53 @@ const QueueDescriptionSetting = ({queue}: {queue: Queue}) => {
         requestAnimationFrame(() => {
             document.getElementById(`queue-description-${tab}-tab`)?.focus();
         });
+    };
+    const applyMarkdownAction = (action: MarkdownEditorAction) => {
+        const textarea = textareaRef.current;
+
+        if (!textarea) {
+            return;
+        }
+
+        const edit = createMarkdownEdit(
+            action,
+            textarea.value,
+            textarea.selectionStart,
+            textarea.selectionEnd,
+        );
+
+        description.setValue(edit.value);
+        requestAnimationFrame(() => {
+            textarea.focus();
+            textarea.setSelectionRange(edit.selectionStart, edit.selectionEnd);
+        });
+    };
+    const handleEditorKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+        if (!event.ctrlKey && !event.metaKey) {
+            return;
+        }
+
+        let action: MarkdownEditorAction | null = null;
+
+        if (!event.shiftKey) {
+            action = {
+                b: "bold",
+                e: "code",
+                i: "italic",
+                k: "link",
+            }[event.key.toLowerCase()] as MarkdownEditorAction | undefined ?? null;
+        } else if (event.code === "Digit7") {
+            action = "ordered-list";
+        } else if (event.code === "Digit8") {
+            action = "unordered-list";
+        } else if (event.code === "Period") {
+            action = "quote";
+        }
+
+        if (action) {
+            event.preventDefault();
+            applyMarkdownAction(action);
+        }
     };
 
     return (
@@ -316,30 +379,31 @@ const QueueDescriptionSetting = ({queue}: {queue: Queue}) => {
                 />
             )}
         >
-            <div className="overflow-hidden rounded-lg border border-tertiary-300 dark:border-tertiary-700">
+            <div className="overflow-hidden rounded-lg border border-tertiary-300 transition-colors focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20 dark:border-tertiary-700">
                 <div
-                    role="tablist"
-                    aria-label="Queue description editor"
-                    className="flex border-b border-tertiary-300 bg-tertiary-100 px-2 dark:border-tertiary-700 dark:bg-tertiary-850"
+                    className="flex items-center overflow-x-auto border-b border-tertiary-300 bg-tertiary-100 px-2 dark:border-tertiary-700 dark:bg-tertiary-850"
                 >
-                    <EditorTab
-                        id="queue-description-write-tab"
-                        controls="queue-description-write-panel"
-                        selected={activeTab === "write"}
-                        onSelect={() => setActiveTab("write")}
-                        onNavigate={() => selectTab("preview")}
-                    >
-                        Write
-                    </EditorTab>
-                    <EditorTab
-                        id="queue-description-preview-tab"
-                        controls="queue-description-preview-panel"
-                        selected={activeTab === "preview"}
-                        onSelect={() => setActiveTab("preview")}
-                        onNavigate={() => selectTab("write")}
-                    >
-                        Preview
-                    </EditorTab>
+                    <div role="tablist" aria-label="Queue description editor" className="flex shrink-0">
+                        <EditorTab
+                            id="queue-description-write-tab"
+                            controls="queue-description-write-panel"
+                            selected={activeTab === "write"}
+                            onSelect={() => setActiveTab("write")}
+                            onNavigate={() => selectTab("preview")}
+                        >
+                            Write
+                        </EditorTab>
+                        <EditorTab
+                            id="queue-description-preview-tab"
+                            controls="queue-description-preview-panel"
+                            selected={activeTab === "preview"}
+                            onSelect={() => setActiveTab("preview")}
+                            onNavigate={() => selectTab("write")}
+                        >
+                            Preview
+                        </EditorTab>
+                    </div>
+                    {activeTab === "write" && <MarkdownEditorToolbar onAction={applyMarkdownAction}/>}
                 </div>
 
                 {activeTab === "write" ? (
@@ -349,18 +413,17 @@ const QueueDescriptionSetting = ({queue}: {queue: Queue}) => {
                         aria-labelledby="queue-description-write-tab"
                     >
                         <textarea
+                            ref={textareaRef}
                             id="queue-description"
                             value={description.value}
                             onChange={(event: ChangeEvent<HTMLTextAreaElement>) => (
                                 description.setValue(event.target.value)
                             )}
-                            onBlur={() => (
-                                void description.saveLatest()
-                            )}
+                            onKeyDown={handleEditorKeyDown}
                             rows={8}
                             placeholder="Describe this queue…"
                             aria-describedby="queue-description-help"
-                            className="min-h-44 w-full resize-y bg-white p-3 text-sm outline-hidden placeholder:text-tertiary-400 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 dark:bg-tertiary-900"
+                            className="min-h-44 w-full resize-y bg-white px-3 pt-3 pb-0 text-sm outline-hidden placeholder:text-tertiary-400 dark:bg-tertiary-900"
                         />
                     </div>
                 ) : (
@@ -377,6 +440,21 @@ const QueueDescriptionSetting = ({queue}: {queue: Queue}) => {
                         )}
                     </div>
                 )}
+            </div>
+            <div className="flex justify-end">
+                <Button
+                    type="button"
+                    rounded="lg"
+                    disabled={!description.dirty || description.isPending}
+                    onClick={() => void description.saveLatest()}
+                >
+                    {description.isPending ? (
+                        <FaCircleNotch className="size-4 animate-spin" aria-hidden="true"/>
+                    ) : (
+                        <MdSave className="size-4" aria-hidden="true"/>
+                    )}
+                    {description.isPending ? "Saving..." : "Save"}
+                </Button>
             </div>
         </SettingField>
     );
@@ -436,13 +514,11 @@ const QueueVisibilitySetting = ({queue}: {queue: Queue}) => {
         status,
         errorMessage,
         isPending,
-        resetStatus,
     } = useQueuePatch(queue.id, {errorMessage: "Failed to update queue visibility."});
 
     useEffect(() => {
         setVisibility(queue.visibility);
-        resetStatus();
-    }, [queue.visibility, resetStatus]);
+    }, [queue.visibility]);
 
     const handleSelect = async (nextVisibility: QueueVisibility) => {
         const previousVisibility = visibility;
@@ -482,13 +558,11 @@ const QueueAvailabilitySetting = ({queue}: {queue: Queue}) => {
         status,
         errorMessage,
         isPending,
-        resetStatus,
     } = useQueuePatch(queue.id, {errorMessage: "Failed to update queue availability."});
 
     useEffect(() => {
         setIsOpen(queue.is_open);
-        resetStatus();
-    }, [queue.is_open, resetStatus]);
+    }, [queue.is_open]);
 
     const handleCheckedChange = async (checked: boolean) => {
         const previousValue = isOpen;

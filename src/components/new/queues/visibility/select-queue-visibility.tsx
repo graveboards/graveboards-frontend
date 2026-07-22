@@ -27,10 +27,12 @@ const SelectQueueVisibility: FC<SelectQueueVisibilityProps> = ({
 }) => (
     <Select
         items={visibilityOptions}
-        renderItem={(item) => <QueueVisibility visibility={item}/>}
+        renderItem={(item) => (
+            <QueueVisibility visibility={item} className="text-black dark:text-white"/>
+        )}
         renderSelected={(item) => (
             <div className="flex items-center gap-1">
-                <QueueVisibility visibility={item}/>
+                <QueueVisibility visibility={item} className="text-black dark:text-white"/>
                 {isPending && <FaCircleNotch className="ml-1.5 size-4 animate-spin"/>}
             </div>
         )}
