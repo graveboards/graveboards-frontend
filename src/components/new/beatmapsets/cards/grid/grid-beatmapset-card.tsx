@@ -2,14 +2,14 @@
 
 import {FC, useState} from "react";
 import clsx from "clsx";
-import {BeatmapsetSnapshot, GameMode} from "@/types/beatmapset";
+import {BeatmapsetSnapshot} from "@/types/beatmapset";
 import {MdPlayArrow} from "react-icons/md";
 import {formatTime} from "@/utils/time-utils";
 import {Button} from "@/components/ui/button";
 import {useBeatmapPreview} from "@/context/preview-context";
 import {cn} from "@/lib/utils";
 import {GridBeatmapsetCardDetails} from "@/components/new/beatmapsets/cards/grid/grid-beatmapset-card-details";
-import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
+import {createBeatmapPreviewSelection, getDefaultBeatmapPreview} from "@/lib/beatmap-preview-selection";
 
 interface GridBeatmapsetCardProps {
     beatmapset: BeatmapsetSnapshot,
@@ -19,8 +19,7 @@ const GridBeatmapsetCard: FC<GridBeatmapsetCardProps> = ({beatmapset}) => {
     const [hover, setHover] = useState(false);
 
     const {selectBeatmap} = useBeatmapPreview();
-    const previewBeatmap = beatmapset.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
-        ?? beatmapset.beatmap_snapshots[0];
+    const previewBeatmap = getDefaultBeatmapPreview(beatmapset);
 
     return (
         <div className="flex min-w-0 flex-col items-start shrink-0 rounded-xl overflow-hidden self-stretch h-64">

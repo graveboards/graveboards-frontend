@@ -10,7 +10,7 @@ import {Button} from "@/components/ui/button";
 import {useBeatmapPreview} from "@/context/preview-context";
 import {BeatmapSnapshot} from "@/types/beatmap";
 import RulesetIcon from "@/components/new/icons/rulesets";
-import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
+import {createBeatmapPreviewSelection, getDefaultBeatmapPreview} from "@/lib/beatmap-preview-selection";
 
 interface BeatmapsetProps {
     beatmapset: BeatmapsetSnapshot,
@@ -19,8 +19,7 @@ interface BeatmapsetProps {
 
 const ListBeatmapsetCard: FC<BeatmapsetProps> = ({beatmapset}) => {
     const {selectBeatmap} = useBeatmapPreview();
-    const previewBeatmap = beatmapset.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
-        ?? beatmapset.beatmap_snapshots[0];
+    const previewBeatmap = getDefaultBeatmapPreview(beatmapset);
 
     const snapshotsByRuleset = useMemo(() => Object.entries(beatmapset.beatmap_snapshots.reduce((acc, snapshot) => {
         const ruleset = snapshot.mode;
@@ -37,7 +36,7 @@ const ListBeatmapsetCard: FC<BeatmapsetProps> = ({beatmapset}) => {
     return (
         <div className="flex rounded-xl overflow-hidden h-24">
             <div
-                className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%]"
+                className="hidden h-full aspect-video flex-col items-end justify-end gap-3 rounded-l-xl bg-tertiary-800 bg-center bg-no-repeat bg-size-[215%] p-2.5 dark:bg-tertiary-950 sm:flex"
                 style={{backgroundImage: `url(${beatmapset.covers["cover"]})`}}>
                 <div className="flex gap-1.5">
                     <Button className="px-1.5 gap-1 h-6.5 font-semibold text-sm"
@@ -58,7 +57,7 @@ const ListBeatmapsetCard: FC<BeatmapsetProps> = ({beatmapset}) => {
             </div>
             <div
                 className={clsx(
-                    `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-8 px-4 relative tracking-wide rounded-xl xl:rounded-l-none xl:rounded-r-xl`,
+                    `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-8 px-4 relative tracking-wide rounded-xl sm:rounded-l-none sm:rounded-r-xl`,
                     "lg:grid-cols-3 grid-cols-2"
                 )}>
                 <div className="truncate">
@@ -82,7 +81,7 @@ const ListBeatmapsetCard: FC<BeatmapsetProps> = ({beatmapset}) => {
                        style={{backgroundImage: `url(${beatmapset.user_profile.avatar_url})`}}></a>
                     <div className="flex flex-col">
                         <div className="text-xs text-tertiary-500 dark:text-tertiary-400">
-                            Mapped by
+                            Hosted by
                         </div>
                         <a href={`https://osu.ppy.sh/users/${beatmapset.user_id}`}
                            className="text-sm font-semibold"

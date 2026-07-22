@@ -14,7 +14,7 @@ import RulesetIcon from "@/components/new/icons/rulesets";
 import {GameMode} from "@/types/beatmapset";
 import {BeatmapSnapshot} from "@/types/beatmap";
 import {BeatmapSnapshots} from "@/components/new/beatmapsets/cards/beatmap-snapshots";
-import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
+import {createBeatmapPreviewSelection, getDefaultBeatmapPreview} from "@/lib/beatmap-preview-selection";
 
 interface RequestPanelProps {
     request: Request,
@@ -25,8 +25,9 @@ const GridRequestCard: FC<RequestPanelProps> = ({request, showQueue = true}) => 
     const [hover, setHover] = useState(false);
 
     const {selectBeatmap} = useBeatmapPreview();
-    const previewBeatmap = request.beatmapset_snapshot?.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
-        ?? request.beatmapset_snapshot?.beatmap_snapshots[0];
+    const previewBeatmap = request.beatmapset_snapshot
+        ? getDefaultBeatmapPreview(request.beatmapset_snapshot)
+        : undefined;
 
     const snapshotsByRuleset = useMemo(() => Object.entries(request.beatmapset_snapshot!.beatmap_snapshots.reduce((acc, snapshot) => {
         const ruleset = snapshot.mode;

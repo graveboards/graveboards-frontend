@@ -37,7 +37,7 @@ const ListBeatmapCard: FC<ListBeatmapCardProps> = ({beatmap}) => {
                     <RulesetIcon ruleset={beatmap.mode}/>
                 </div>
                 <div
-                    className="flex-col p-2.5 justify-end gap-3 items-end hidden xl:flex rounded-l-xl h-full aspect-video bg-tertiary-800 dark:bg-tertiary-950 bg-center bg-no-repeat bg-size-[215%]"
+                    className="hidden h-full aspect-video flex-col items-end justify-end gap-3 rounded-l-xl bg-tertiary-800 bg-center bg-no-repeat bg-size-[215%] p-2.5 dark:bg-tertiary-950 sm:flex"
                     style={{backgroundImage: `url(${beatmap.beatmapset_snapshots[0].covers["cover"]})`}}>
                     <div className="flex gap-1.5">
                         <Button className="px-1.5 gap-1 h-6.5 font-semibold text-sm"
@@ -58,7 +58,7 @@ const ListBeatmapCard: FC<ListBeatmapCardProps> = ({beatmap}) => {
                 </div>
                 <div
                     className={clsx(
-                        `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-8 px-4 relative tracking-wide rounded-xl xl:rounded-l-none xl:rounded-r-xl xl:grid-cols-4 lg:grid-cols-3 grid-cols-2`
+                        `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-8 px-4 relative tracking-wide rounded-xl sm:rounded-l-none sm:rounded-r-xl xl:grid-cols-4 lg:grid-cols-3 grid-cols-2`
                     )}>
                     <div className="truncate">
                         <a href={`https://osu.ppy.sh/beatmaps/${beatmap.beatmap_id}`}
@@ -72,6 +72,16 @@ const ListBeatmapCard: FC<ListBeatmapCardProps> = ({beatmap}) => {
                             Hosted by <a href={`https://osu.ppy.sh/users/${beatmap.beatmapset_snapshots[0].user_id}`}
                                          className="font-semibold"
                                          target="_blank">{beatmap.beatmapset_snapshots[0].creator}</a>
+                        </div>
+                        <div className="block truncate text-xs text-tertiary-500 dark:text-tertiary-400 lg:hidden">
+                            Mapped by <a
+                                href={`https://osu.ppy.sh/users/${beatmap.owner_profiles[0].user_id}`}
+                                className="font-semibold"
+                                target="_blank"
+                            >
+                                {beatmap.owner_profiles[0].username}
+                            </a>
+                            {beatmap.owner_profiles.length > 1 && ` and ${beatmap.owner_profiles.length - 1} more`}
                         </div>
                     </div>
 

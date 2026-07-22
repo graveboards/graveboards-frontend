@@ -13,8 +13,7 @@ import {useBeatmapPreview} from "@/context/preview-context";
 import {patchRequest} from "@/actions/requests";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import {GameMode} from "@/types/beatmapset";
-import {createBeatmapPreviewSelection} from "@/lib/beatmap-preview-selection";
+import {createBeatmapPreviewSelection, getDefaultBeatmapPreview} from "@/lib/beatmap-preview-selection";
 
 interface RequestCardProps {
     request: Request,
@@ -25,10 +24,13 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
     const [status, setStatus] = useState<RequestStatus>(request.status);
 
     const {selectBeatmap} = useBeatmapPreview();
-    const previewBeatmap = request.beatmapset_snapshot?.beatmap_snapshots.find((beatmap) => beatmap.mode === GameMode.Osu)
-        ?? request.beatmapset_snapshot?.beatmap_snapshots[0];
+    const previewBeatmap = request.beatmapset_snapshot
+        ? getDefaultBeatmapPreview(request.beatmapset_snapshot)
+        : undefined;
 
+    const [commentHovered, setCommentHovered] = useState(false);
     const [commentOpen, setCommentOpen] = useState(false);
+    const commentRef = React.useRef<HTMLDivElement>(null);
 
     const formRef = React.useRef<HTMLFormElement>(null);
 
@@ -51,6 +53,21 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
             formRef.current?.requestSubmit();
         }
     }, [status, requestStatusState.status]);
+
+    useEffect(() => {
+        if (!commentOpen) {
+            return;
+        }
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (commentRef.current && !commentRef.current.contains(event.target as Node)) {
+                setCommentOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [commentOpen]);
 
     return (
         <div className="flex rounded-xl h-24">
@@ -81,8 +98,8 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
                 className={clsx(
                     `bg-tertiary-50 dark:text-white dark:bg-tertiary-900 grid w-full items-center gap-4 px-4 relative tracking-wide rounded-xl xl:rounded-l-none xl:rounded-r-xl`,
                     editMode
-                        ? "lg:grid-cols-[repeat(3,minmax(0,1fr))_1.5rem_minmax(0,1fr)_auto] sm:grid-cols-[repeat(2,minmax(0,1fr))_1.5rem_minmax(0,1fr)_auto] grid-cols-[minmax(0,1fr)_auto_auto]"
-                        : "lg:grid-cols-[repeat(3,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr))_1.5rem_repeat(1,minmax(0,1fr))] grid-cols-2"
+                        ? "lg:grid-cols-[repeat(3,minmax(0,1fr))_2.25rem_minmax(0,1fr)_auto] sm:grid-cols-[repeat(2,minmax(0,1fr))_2.25rem_minmax(0,1fr)_auto] grid-cols-[minmax(0,1fr)_auto_auto]"
+                        : "lg:grid-cols-[repeat(3,minmax(0,1fr))_2.25rem_repeat(1,minmax(0,1fr))] sm:grid-cols-[repeat(2,minmax(0,1fr))_2.25rem_repeat(1,minmax(0,1fr))] grid-cols-2"
                 )}>
                 <div className="truncate">
                     <a href={`https://osu.ppy.sh/beatmapsets/${request.beatmapset_id}`}
@@ -153,26 +170,32 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
                 </div>
 
 
-                <div className="text-tertiary-500 font-semibold gap-1 items-center hidden sm:flex">
+                <div className="hidden items-center justify-center text-tertiary-500 sm:flex">
                     {
                         request.comment && request.comment.length > 0 && (
-                            <>
-                                <MdComment
-                                    className="size-6 shrink-0"
-                                    onMouseEnter={() => setCommentOpen(true)}
-                                    onMouseLeave={() => setCommentOpen(false)}
-                                />
-                                {commentOpen && (
-                                    <div className="relative">
-                                        <div
-                                            className="absolute z-10 w-64 p-2 bg-white border rounded-lg text-tertiary-500 dark:text-tertiary-400 dark:bg-tertiary-800 dark:border-tertiary-700 right-0 top-full mt-4"
-                                        >
-                                            {request.comment}
-                                        </div>
+                            <div
+                                ref={commentRef}
+                                className="relative"
+                                onMouseEnter={() => setCommentHovered(true)}
+                                onMouseLeave={() => setCommentHovered(false)}
+                            >
+                                <button
+                                    type="button"
+                                    aria-expanded={commentOpen}
+                                    aria-label={commentOpen ? "Hide request comment" : "Show request comment"}
+                                    className="flex size-9 cursor-pointer items-center justify-center"
+                                    onClick={() => setCommentOpen((open) => !open)}
+                                >
+                                    <MdComment className="size-6 shrink-0"/>
+                                </button>
+                                {(commentHovered || commentOpen) && (
+                                    <div
+                                        className="absolute bottom-full right-0 z-10 mb-2 w-64 rounded-lg border bg-white p-2 text-tertiary-500 dark:border-tertiary-700 dark:bg-tertiary-800 dark:text-tertiary-400"
+                                    >
+                                        {request.comment}
                                     </div>
                                 )}
-                            </>
-
+                            </div>
                         )
                     }
                 </div>
@@ -186,7 +209,7 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
                         <SelectRequestStatus
                             key={requestStatusState.status}
                             name="status"
-                            className="w-32"
+                            className="w-18 xl:w-32"
                             initialStatus={requestStatusState.status}
                             onSelect={setStatus}
                             isPending={isRequestStatusPending}
@@ -199,7 +222,7 @@ const ListRequestCard: FC<RequestCardProps> = ({request, editMode = false}) => {
                 )}
 
                 {editMode && (
-                    <div className="flex flex-col items-center justify-center gap-1 pr-4">
+                    <div className="flex flex-col items-center justify-center gap-1 xl:pr-4">
                         <Button
                             type="button"
                             size="xs"
